@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ela's Cosmic Birthday - A Living Universe</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;1,400&family=Inter:wght@300;400;600&display=swap');
 
@@ -56,17 +57,6 @@
             pointer-events: none;
         }
 
-        /* Entrance Animation */
-        .entry-content {
-            text-align: center;
-            animation: breathe 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-
-        @keyframes breathe {
-            0%, 100% { transform: translateY(0) scale(1); }
-            50% { transform: translateY(-15px) scale(1.02); }
-        }
-
         /* Cosmic Shimmer */
         .cosmic-shimmer {
             background: linear-gradient(90deg, var(--cosmic-text), var(--cosmic-accent), var(--cosmic-glow), var(--cosmic-accent), var(--cosmic-text));
@@ -94,21 +84,8 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            inset: -100%;
-            background: conic-gradient(from 0deg at 50% 50%, transparent, var(--cosmic-accent), transparent);
-            animation: spin 20s linear infinite;
-            opacity: 0.05;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         /* Canvas Layers */
-        .canvas-container {
+        #starCanvas, #auroraCanvas, #constellationCanvas {
             position: fixed;
             top: 0;
             left: 0;
@@ -118,61 +95,41 @@
         }
 
         #starCanvas { z-index: 1; }
-        #auroraCanvas { z-index: 2; mix-blend-mode: screen; opacity: 0.4; }
-        #particleCanvas { z-index: 3; }
-        #constellationCanvas { 
-            z-index: 4; 
-            pointer-events: all;
-            cursor: crosshair;
-        }
-
-        /* Floating Elements Animation */
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            33% { transform: translateY(-20px) rotate(-5deg); }
-            66% { transform: translateY(10px) rotate(5deg); }
-        }
-
-        .floating {
-            animation: float 6s ease-in-out infinite;
-        }
+        #auroraCanvas { z-index: 2; mix-blend-mode: screen; opacity: 0.3; }
+        #constellationCanvas { z-index: 3; pointer-events: all; }
 
         /* Audio Visualizer */
         .audio-visual {
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: 3px;
-            height: 80px;
+            gap: 4px;
+            height: 60px;
             margin: 20px 0;
         }
 
         .audio-bar {
-            width: 4px;
+            width: 6px;
             background: linear-gradient(to top, var(--cosmic-accent), var(--cosmic-glow));
-            border-radius: 2px;
+            border-radius: 3px;
             transform-origin: bottom;
-            transition: height 0.15s ease-out;
-            box-shadow: 0 0 10px rgba(183, 148, 246, 0.5);
+            transition: height 0.1s ease-out;
         }
 
-        /* 3D Cake */
+        /* 3D Cake Container */
         .cake-3d {
             width: 300px;
-            height: 350px;
+            height: 300px;
             margin: 2rem auto;
             perspective: 1000px;
-            position: relative;
         }
 
         .cake-body {
-            width: 250px;
-            height: 150px;
-            position: absolute;
-            left: 25px;
-            top: 100px;
+            width: 100%;
+            height: 100%;
+            position: relative;
             transform-style: preserve-3d;
-            animation: rotateCake 15s infinite linear;
+            animation: rotateCake 20s infinite linear;
         }
 
         @keyframes rotateCake {
@@ -180,100 +137,34 @@
             to { transform: rotateY(360deg); }
         }
 
-        .cake-layer {
-            position: absolute;
-            width: 100%;
-            background: linear-gradient(135deg, #8b4513, #d2691e);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
-
-        .cake-top {
-            height: 50px;
-            background: linear-gradient(135deg, #ff69b4, #ff1493);
-            top: -50px;
-        }
-
-        .cake-middle {
-            height: 50px;
-            background: linear-gradient(135deg, #daa520, #ffd700);
-        }
-
-        .cake-bottom {
-            height: 50px;
-            background: linear-gradient(135deg, #8b4513, #a0522d);
-            top: 50px;
-        }
-
         .candle {
             position: absolute;
-            width: 12px;
-            height: 50px;
+            width: 10px;
+            height: 40px;
             background: linear-gradient(to top, #f4e4c1, #fff);
-            top: -100px;
+            top: -40px;
             border-radius: 5px;
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
         }
 
         .flame {
             position: absolute;
-            width: 25px;
-            height: 35px;
-            background: radial-gradient(circle, #fff 0%, #ffa500 30%, #ff4500 60%, transparent 70%);
-            top: -35px;
-            left: -6px;
+            width: 20px;
+            height: 30px;
+            background: radial-gradient(circle, #ffa500, #ff4500);
+            top: -30px;
+            left: -5px;
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
             animation: flicker 0.5s infinite alternate;
-            transition: all 0.5s ease-out;
-            filter: blur(1px);
-            box-shadow: 0 -10px 30px #ffa500, 0 0 40px #ff4500;
+            transition: opacity 0.5s;
         }
 
         .flame.extinguished {
             opacity: 0;
-            transform: scale(0) translateY(-20px);
         }
 
         @keyframes flicker {
-            0% { 
-                transform: scale(1) rotate(-2deg) translateY(0);
-                filter: brightness(1) blur(1px);
-            }
-            100% { 
-                transform: scale(1.1) rotate(2deg) translateY(-2px);
-                filter: brightness(1.2) blur(2px);
-            }
-        }
-
-        /* Smoke effect */
-        .smoke {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: radial-gradient(circle, rgba(200,200,200,0.3) 0%, transparent 70%);
-            border-radius: 50%;
-            top: -40px;
-            left: -9px;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .flame.extinguished + .smoke {
-            animation: smokeRise 2s ease-out forwards;
-        }
-
-        @keyframes smokeRise {
-            0% {
-                opacity: 0;
-                transform: translateY(0) scale(0.5);
-            }
-            20% {
-                opacity: 0.8;
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-60px) scale(2);
-            }
+            0% { transform: scale(1) rotate(-2deg); }
+            100% { transform: scale(1.1) rotate(2deg); }
         }
 
         /* Morphing Text */
@@ -281,29 +172,9 @@
             font-size: 3rem;
             text-align: center;
             margin: 2rem 0;
-            transition: all 0.5s ease-out;
         }
 
-        /* Interactive Hints */
-        .hint-bubble {
-            position: fixed;
-            background: rgba(183, 148, 246, 0.9);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            pointer-events: none;
-            opacity: 0;
-            transition: all 0.3s ease-out;
-            z-index: 1000;
-        }
-
-        .hint-bubble.show {
-            opacity: 1;
-            transform: translateY(-10px);
-        }
-
-        /* Letter Animation */
+        /* Letter Content */
         .letter p {
             line-height: 1.9;
             margin-bottom: 25px;
@@ -333,51 +204,61 @@
         .letter p:nth-child(7) { animation-delay: 0.7s; }
         .letter p:nth-child(8) { animation-delay: 0.8s; }
 
-        /* Pulse Animation for Interactive Elements */
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(183, 148, 246, 0.7); }
-            70% { box-shadow: 0 0 0 20px rgba(183, 148, 246, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(183, 148, 246, 0); }
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
+        /* SVG Filters */
+        .breathing-text {
+            filter: url(#breathe);
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             h1 { font-size: 2em; }
             .letter { padding: 30px 20px; }
-            .cake-3d { transform: scale(0.8); }
+        }
+
+        /* Reduce Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Canvas Layers -->
-    <canvas id="starCanvas" class="canvas-container"></canvas>
-    <canvas id="auroraCanvas" class="canvas-container"></canvas>
-    <canvas id="particleCanvas" class="canvas-container"></canvas>
-    <canvas id="constellationCanvas" class="canvas-container"></canvas>
+    <!-- SVG Filters for Organic Effects -->
+    <svg width="0" height="0">
+        <defs>
+            <filter id="breathe">
+                <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="2" result="turbulence" seed="1">
+                    <animate attributeName="baseFrequency" from="0.02" to="0.025" dur="4s" repeatCount="indefinite"/>
+                </feTurbulence>
+                <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="3" xChannelSelector="R" yChannelSelector="G"/>
+            </filter>
+        </defs>
+    </svg>
 
-    <!-- Hint Bubble -->
-    <div id="hintBubble" class="hint-bubble"></div>
+    <!-- Canvas Layers -->
+    <canvas id="starCanvas"></canvas>
+    <canvas id="auroraCanvas"></canvas>
+    <canvas id="constellationCanvas"></canvas>
 
     <!-- Entry Portal -->
     <div class="portal-overlay" id="entryOverlay" role="dialog" aria-modal="true">
-        <div class="entry-content">
-            <h1 class="cosmic-shimmer mb-6">A Cosmic Birthday Journey</h1>
+        <div class="text-center p-8">
+            <h1 class="cosmic-shimmer mb-6 breathing-text">A Cosmic Birthday Journey</h1>
             <p class="text-xl mb-8 opacity-80">For Ela, written in stardust and dreams</p>
-            <button class="px-8 py-4 border border-purple-400/50 rounded-full hover:bg-purple-900/20 transition-all pulse" id="enterBtn">
+            <button class="px-8 py-4 border border-purple-400/50 rounded-full hover:bg-purple-900/20 transition-all" id="enterBtn">
                 Enter the Universe ✨
             </button>
         </div>
     </div>
 
     <!-- Main Container -->
-    <div class="container mx-auto px-4 py-8 relative z-10 opacity-0 transition-all duration-1000" id="mainContainer">
+    <div class="container mx-auto px-4 py-8 relative z-10 opacity-0" id="mainContainer">
         
         <!-- Header -->
-        <header class="text-center mb-12 floating">
+        <header class="text-center mb-12">
             <h1 class="cosmic-shimmer">Happy Birthday, Ela</h1>
             <p class="text-xl mt-4 opacity-90">Today the universe dances for you</p>
         </header>
@@ -385,67 +266,51 @@
         <!-- Audio Visualizer -->
         <section class="max-w-lg mx-auto mb-12 glass-card" aria-label="Music Visualizer">
             <h2 class="text-center text-xl mb-4 text-purple-300">♪ Your Birthday Symphony ♪</h2>
-            <div class="audio-visual" id="audioVisual"></div>
+            <div class="audio-visual" id="audioVisual">
+                <!-- Bars will be dynamically sized based on frequency data -->
+            </div>
             <audio id="bgMusic" loop>
                 <source src="Pisces - Tony Ann (Piano Cover).mp3" type="audio/mpeg">
             </audio>
-            <div class="flex gap-4 mt-4">
-                <button class="flex-1 px-4 py-2 bg-purple-900/30 rounded-lg hover:bg-purple-900/50 transition-colors" id="playBtn">
-                    ▶️ Play
-                </button>
-                <button class="flex-1 px-4 py-2 bg-purple-900/30 rounded-lg hover:bg-purple-900/50 transition-colors" id="pauseBtn">
-                    ⏸️ Pause
-                </button>
-            </div>
+            <button class="w-full mt-4 px-4 py-2 bg-purple-900/30 rounded-lg hover:bg-purple-900/50 transition-colors" id="musicToggle">
+                Play/Pause Music
+            </button>
         </section>
 
         <!-- Interactive Constellation Creator -->
         <section class="max-w-4xl mx-auto mb-12 glass-card">
             <h2 class="text-2xl mb-6 text-center text-purple-300">Create Your Constellation</h2>
-            <p class="text-center mb-4 opacity-70">Click anywhere on the screen to place stars - they'll connect magically!</p>
-            <div class="flex justify-center gap-4">
-                <button class="px-6 py-2 bg-purple-600/30 rounded-lg hover:bg-purple-600/50 transition-colors" id="clearConstellation">
-                    🌟 Clear Stars
-                </button>
-                <span class="px-6 py-2 text-purple-300" id="starCount">Stars: 0</span>
-            </div>
+            <p class="text-center mb-4 opacity-70">Click to place stars, they'll connect automatically</p>
+            <button class="px-4 py-2 bg-purple-600/30 rounded-lg" id="clearConstellation">Clear Stars</button>
         </section>
 
         <!-- 3D Birthday Cake with Blow Detection -->
         <section class="max-w-lg mx-auto mb-12 glass-card text-center">
-            <h2 class="text-2xl mb-6 text-purple-300">Make a Wish & Blow Out Your Candles</h2>
+            <h2 class="text-2xl mb-6 text-purple-300">Blow Out Your Candles</h2>
             <div class="cake-3d">
                 <div class="cake-body">
-                    <div class="cake-layer cake-top"></div>
-                    <div class="cake-layer cake-middle"></div>
-                    <div class="cake-layer cake-bottom"></div>
-                    <div class="candle" style="left: 50px;">
-                        <div class="flame" id="flame1"></div>
-                        <div class="smoke"></div>
-                    </div>
-                    <div class="candle" style="left: 100px;">
-                        <div class="flame" id="flame2"></div>
-                        <div class="smoke"></div>
-                    </div>
-                    <div class="candle" style="left: 150px;">
-                        <div class="flame" id="flame3"></div>
-                        <div class="smoke"></div>
+                    <div style="position: absolute; width: 200px; height: 80px; background: linear-gradient(135deg, #8b4513, #d2691e); left: 50px; top: 100px; border-radius: 10px;">
+                        <div class="candle" style="left: 50px;">
+                            <div class="flame" id="flame1"></div>
+                        </div>
+                        <div class="candle" style="left: 95px;">
+                            <div class="flame" id="flame2"></div>
+                        </div>
+                        <div class="candle" style="left: 140px;">
+                            <div class="flame" id="flame3"></div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <button class="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-full hover:scale-105 transition-transform pulse" id="micBtn">
-                🎤 Blow with Microphone
+            <button class="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-full" id="micBtn">
+                🎤 Enable Microphone to Blow
             </button>
-            <p class="text-sm mt-4 opacity-70">Or click the flames to extinguish them</p>
-            <div id="blowMeter" class="mt-4 h-4 bg-gray-800 rounded-full overflow-hidden hidden">
-                <div id="blowLevel" class="h-full bg-gradient-to-r from-purple-600 to-purple-400 transition-all duration-100" style="width: 0%"></div>
-            </div>
+            <p class="text-sm mt-2 opacity-70">Or click the candles to extinguish</p>
         </section>
 
         <!-- Morphing Birthday Wishes -->
         <section class="max-w-lg mx-auto mb-12 glass-card text-center">
-            <div id="morphText" class="cosmic-shimmer floating">Happy Birthday</div>
-            <p class="text-sm opacity-70 mt-4">Watch as wishes transform...</p>
+            <div id="morphText" class="cosmic-shimmer">Happy Birthday</div>
         </section>
 
         <!-- Birthday Letter -->
@@ -482,506 +347,489 @@
         <!-- Footer -->
         <footer class="text-center py-12">
             <h2 class="text-2xl cosmic-shimmer mb-4">The universe is yours today</h2>
-            <p class="opacity-80">Move your mouse to see the magic • Click anywhere for stardust</p>
+            <p class="opacity-80">Move your mouse to influence gravity</p>
         </footer>
     </div>
 
     <script>
         'use strict';
 
-        // Complete Cosmic Birthday Experience
+        // Advanced Cosmic Birthday Experience with Full Feature Implementation
         const CosmicBirthday = (() => {
-            // Global state
-            const state = {
+            // State Machine for Robust Event Architecture
+            const AppState = {
+                LOADING: 'loading',
+                READY: 'ready',
+                ENTERING: 'entering',
+                ACTIVE: 'active'
+            };
+
+            let currentState = AppState.LOADING;
+
+            // Immutable State Store with Structural Sharing
+            const createStore = (initialState) => {
+                let state = Object.freeze({...initialState});
+                const listeners = new Set();
+                
+                return {
+                    getState: () => state,
+                    setState: (updater) => {
+                        const newState = Object.freeze({
+                            ...state,
+                            ...updater(state)
+                        });
+                        state = newState;
+                        listeners.forEach(fn => fn(newState));
+                        return newState;
+                    },
+                    subscribe: (fn) => {
+                        listeners.add(fn);
+                        return () => listeners.delete(fn);
+                    }
+                };
+            };
+
+            const store = createStore({
+                mouseX: 0.5,
+                mouseY: 0.5,
                 isPlaying: false,
-                mouseX: window.innerWidth / 2,
-                mouseY: window.innerHeight / 2,
-                constellationPoints: [],
-                particles: [],
+                particles: new Float32Array(10000 * 6), // x, y, vx, vy, life, size
+                constellation: [],
+                audioData: new Uint8Array(128),
                 candlesLit: [true, true, true]
-            };
+            });
 
-            // Initialize canvases
-            const setupCanvases = () => {
-                const canvases = ['starCanvas', 'auroraCanvas', 'particleCanvas', 'constellationCanvas'];
-                const contexts = {};
-                
-                canvases.forEach(id => {
-                    const canvas = document.getElementById(id);
-                    canvas.width = window.innerWidth;
-                    canvas.height = window.innerHeight;
-                    contexts[id] = canvas.getContext('2d');
-                });
-                
-                window.addEventListener('resize', () => {
-                    canvases.forEach(id => {
-                        const canvas = document.getElementById(id);
-                        canvas.width = window.innerWidth;
-                        canvas.height = window.innerHeight;
-                    });
-                });
-                
-                return contexts;
-            };
-
-            const contexts = setupCanvases();
-
-            // Star System
-            class StarField {
-                constructor(ctx) {
-                    this.ctx = ctx;
-                    this.stars = [];
-                    for (let i = 0; i < 200; i++) {
-                        this.stars.push({
-                            x: Math.random() * window.innerWidth,
-                            y: Math.random() * window.innerHeight,
-                            size: Math.random() * 2 + 0.5,
-                            brightness: Math.random(),
-                            speed: Math.random() * 0.5 + 0.1
-                        });
+            // Perlin Noise Implementation for Aurora Effects
+            class PerlinNoise {
+                constructor() {
+                    this.perm = new Uint8Array(512);
+                    const p = new Uint8Array(256);
+                    for (let i = 0; i < 256; i++) p[i] = i;
+                    for (let i = 255; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [p[i], p[j]] = [p[j], p[i]];
+                    }
+                    for (let i = 0; i < 512; i++) {
+                        this.perm[i] = p[i & 255];
                     }
                 }
 
-                update() {
-                    this.stars.forEach(star => {
-                        star.brightness += (Math.random() - 0.5) * 0.1;
-                        star.brightness = Math.max(0.1, Math.min(1, star.brightness));
-                    });
+                noise(x, y, z = 0) {
+                    const X = Math.floor(x) & 255;
+                    const Y = Math.floor(y) & 255;
+                    const Z = Math.floor(z) & 255;
+                    
+                    x -= Math.floor(x);
+                    y -= Math.floor(y);
+                    z -= Math.floor(z);
+                    
+                    const u = this.fade(x);
+                    const v = this.fade(y);
+                    const w = this.fade(z);
+                    
+                    const A = this.perm[X] + Y;
+                    const AA = this.perm[A] + Z;
+                    const AB = this.perm[A + 1] + Z;
+                    const B = this.perm[X + 1] + Y;
+                    const BA = this.perm[B] + Z;
+                    const BB = this.perm[B + 1] + Z;
+                    
+                    return this.lerp(w,
+                        this.lerp(v,
+                            this.lerp(u, this.grad(this.perm[AA], x, y, z),
+                                        this.grad(this.perm[BA], x - 1, y, z)),
+                            this.lerp(u, this.grad(this.perm[AB], x, y - 1, z),
+                                        this.grad(this.perm[BB], x - 1, y - 1, z))),
+                        this.lerp(v,
+                            this.lerp(u, this.grad(this.perm[AA + 1], x, y, z - 1),
+                                        this.grad(this.perm[BA + 1], x - 1, y, z - 1)),
+                            this.lerp(u, this.grad(this.perm[AB + 1], x, y - 1, z - 1),
+                                        this.grad(this.perm[BB + 1], x - 1, y - 1, z - 1))));
                 }
 
-                render() {
-                    this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-                    
-                    // Add gradient background
-                    const gradient = this.ctx.createRadialGradient(
-                        state.mouseX, state.mouseY, 0,
-                        state.mouseX, state.mouseY, 800
-                    );
-                    gradient.addColorStop(0, 'rgba(183, 148, 246, 0.05)');
-                    gradient.addColorStop(1, 'transparent');
-                    this.ctx.fillStyle = gradient;
-                    this.ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-                    
-                    // Draw stars
-                    this.stars.forEach(star => {
-                        this.ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`;
-                        this.ctx.shadowBlur = 10;
-                        this.ctx.shadowColor = 'white';
-                        this.ctx.beginPath();
-                        this.ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
-                        this.ctx.fill();
-                    });
-                    this.ctx.shadowBlur = 0;
+                fade(t) {
+                    return t * t * t * (t * (t * 6 - 15) + 10);
+                }
+
+                lerp(t, a, b) {
+                    return a + t * (b - a);
+                }
+
+                grad(hash, x, y, z) {
+                    const h = hash & 15;
+                    const u = h < 8 ? x : y;
+                    const v = h < 4 ? y : h === 12 || h === 14 ? x : z;
+                    return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
                 }
             }
 
-            // Aurora Effect
-            class Aurora {
-                constructor(ctx) {
-                    this.ctx = ctx;
-                    this.time = 0;
-                }
+            const perlin = new PerlinNoise();
 
-                update() {
-                    this.time += 0.01;
-                }
-
-                render() {
-                    this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-                    
-                    for (let i = 0; i < 5; i++) {
-                        const gradient = this.ctx.createLinearGradient(
-                            0, 0, window.innerWidth, window.innerHeight
-                        );
-                        
-                        const offset = Math.sin(this.time + i) * 0.5 + 0.5;
-                        gradient.addColorStop(0, `hsla(${280 + i * 20}, 70%, 50%, 0)`);
-                        gradient.addColorStop(offset, `hsla(${280 + i * 20}, 70%, 50%, 0.2)`);
-                        gradient.addColorStop(1, `hsla(${280 + i * 20}, 70%, 50%, 0)`);
-                        
-                        this.ctx.fillStyle = gradient;
-                        this.ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
-                    }
-                }
-            }
-
-            // Particle System
+            // Advanced Particle System with TypedArrays
             class ParticleSystem {
-                constructor(ctx) {
-                    this.ctx = ctx;
+                constructor(maxParticles = 10000) {
+                    this.maxParticles = maxParticles;
+                    this.particles = new Float32Array(maxParticles * 6);
+                    this.activeCount = 0;
                 }
 
-                spawn(x, y) {
-                    for (let i = 0; i < 10; i++) {
-                        state.particles.push({
-                            x: x,
-                            y: y,
-                            vx: (Math.random() - 0.5) * 5,
-                            vy: (Math.random() - 0.5) * 5 - 2,
-                            life: 1,
-                            size: Math.random() * 3 + 1,
-                            color: `hsl(${Math.random() * 60 + 270}, 70%, 60%)`
-                        });
+                spawn(x, y, count = 5) {
+                    for (let i = 0; i < count && this.activeCount < this.maxParticles; i++) {
+                        const idx = this.activeCount * 6;
+                        const angle = Math.random() * Math.PI * 2;
+                        const speed = Math.random() * 3 + 1;
+                        
+                        this.particles[idx] = x;
+                        this.particles[idx + 1] = y;
+                        this.particles[idx + 2] = Math.cos(angle) * speed;
+                        this.particles[idx + 3] = Math.sin(angle) * speed - 2;
+                        this.particles[idx + 4] = 1.0;
+                        this.particles[idx + 5] = Math.random() * 4 + 2;
+                        
+                        this.activeCount++;
                     }
                 }
 
-                update() {
-                    state.particles = state.particles.filter(p => {
-                        p.x += p.vx;
-                        p.y += p.vy;
-                        p.vy += 0.1; // gravity
-                        p.life -= 0.01;
+                update(deltaTime, mouseX, mouseY) {
+                    const dt = deltaTime * 0.001;
+                    let writeIdx = 0;
+                    
+                    for (let i = 0; i < this.activeCount; i++) {
+                        const idx = i * 6;
                         
-                        // Mouse attraction
-                        const dx = state.mouseX - p.x;
-                        const dy = state.mouseY - p.y;
+                        // Gravitational pull toward mouse
+                        const dx = mouseX - this.particles[idx];
+                        const dy = mouseY - this.particles[idx + 1];
                         const dist = Math.sqrt(dx * dx + dy * dy);
-                        if (dist > 50 && dist < 200) {
-                            p.vx += dx / dist * 0.2;
-                            p.vy += dy / dist * 0.2;
+                        
+                        if (dist > 10) {
+                            const force = 500 / (dist * dist);
+                            this.particles[idx + 2] += (dx / dist) * force * dt;
+                            this.particles[idx + 3] += (dy / dist) * force * dt;
                         }
                         
-                        return p.life > 0;
-                    });
-                }
-
-                render() {
-                    this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-                    
-                    state.particles.forEach(p => {
-                        this.ctx.globalAlpha = p.life;
-                        this.ctx.fillStyle = p.color;
-                        this.ctx.shadowBlur = 20;
-                        this.ctx.shadowColor = p.color;
-                        this.ctx.beginPath();
-                        this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-                        this.ctx.fill();
-                    });
-                    
-                    this.ctx.globalAlpha = 1;
-                    this.ctx.shadowBlur = 0;
-                }
-            }
-
-            // Constellation Creator
-            class ConstellationCreator {
-                constructor(ctx) {
-                    this.ctx = ctx;
-                    this.pulseTime = 0;
-                }
-
-                addStar(x, y) {
-                    // Add new star
-                    state.constellationPoints.push({
-                        x: x,
-                        y: y,
-                        connections: []
-                    });
-                    
-                    // Auto-connect to nearby stars
-                    const newIndex = state.constellationPoints.length - 1;
-                    state.constellationPoints.forEach((point, index) => {
-                        if (index !== newIndex) {
-                            const dist = Math.sqrt(
-                                Math.pow(point.x - x, 2) + 
-                                Math.pow(point.y - y, 2)
-                            );
-                            if (dist < 200) {
-                                state.constellationPoints[newIndex].connections.push(index);
+                        // Update position
+                        this.particles[idx] += this.particles[idx + 2] * dt * 60;
+                        this.particles[idx + 1] += this.particles[idx + 3] * dt * 60;
+                        
+                        // Apply damping
+                        this.particles[idx + 2] *= 0.99;
+                        this.particles[idx + 3] *= 0.99;
+                        
+                        // Decay life
+                        this.particles[idx + 4] -= dt * 0.3;
+                        
+                        // Keep alive particles
+                        if (this.particles[idx + 4] > 0) {
+                            if (writeIdx !== i) {
+                                for (let j = 0; j < 6; j++) {
+                                    this.particles[writeIdx * 6 + j] = this.particles[idx + j];
+                                }
                             }
+                            writeIdx++;
                         }
-                    });
+                    }
                     
-                    // Update star count
-                    document.getElementById('starCount').textContent = `Stars: ${state.constellationPoints.length}`;
-                    
-                    // Visual feedback
-                    this.createRipple(x, y);
+                    this.activeCount = writeIdx;
                 }
 
-                createRipple(x, y) {
-                    // Create expanding ripple effect
-                    let radius = 0;
-                    const maxRadius = 50;
-                    const ripple = setInterval(() => {
-                        radius += 2;
-                        if (radius > maxRadius) {
-                            clearInterval(ripple);
-                            return;
-                        }
+                render(ctx) {
+                    for (let i = 0; i < this.activeCount; i++) {
+                        const idx = i * 6;
+                        const life = this.particles[idx + 4];
                         
-                        this.ctx.strokeStyle = `rgba(183, 148, 246, ${1 - radius / maxRadius})`;
-                        this.ctx.lineWidth = 2;
-                        this.ctx.beginPath();
-                        this.ctx.arc(x, y, radius, 0, Math.PI * 2);
-                        this.ctx.stroke();
-                    }, 20);
-                }
-
-                clear() {
-                    state.constellationPoints = [];
-                    document.getElementById('starCount').textContent = 'Stars: 0';
-                }
-
-                update() {
-                    this.pulseTime += 0.05;
-                }
-
-                render() {
-                    this.ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-                    
-                    // Draw connections
-                    state.constellationPoints.forEach((point, index) => {
-                        point.connections.forEach(targetIndex => {
-                            const target = state.constellationPoints[targetIndex];
-                            if (target) {
-                                // Animated energy line
-                                const gradient = this.ctx.createLinearGradient(
-                                    point.x, point.y, target.x, target.y
-                                );
-                                gradient.addColorStop(0, 'rgba(183, 148, 246, 0.1)');
-                                gradient.addColorStop(0.5, 'rgba(183, 148, 246, 0.5)');
-                                gradient.addColorStop(1, 'rgba(183, 148, 246, 0.1)');
-                                
-                                this.ctx.strokeStyle = gradient;
-                                this.ctx.lineWidth = 2;
-                                this.ctx.beginPath();
-                                this.ctx.moveTo(point.x, point.y);
-                                this.ctx.lineTo(target.x, target.y);
-                                this.ctx.stroke();
-                                
-                                // Energy pulse
-                                const t = (Math.sin(this.pulseTime + index) + 1) / 2;
-                                const pulseX = point.x + (target.x - point.x) * t;
-                                const pulseY = point.y + (target.y - point.y) * t;
-                                
-                                this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                                this.ctx.beginPath();
-                                this.ctx.arc(pulseX, pulseY, 3, 0, Math.PI * 2);
-                                this.ctx.fill();
-                            }
-                        });
-                    });
-                    
-                    // Draw stars
-                    state.constellationPoints.forEach((point, i) => {
-                        const pulse = Math.sin(this.pulseTime + i * 0.5) * 0.5 + 0.5;
-                        
-                        // Glow
-                        const glow = this.ctx.createRadialGradient(
-                            point.x, point.y, 0,
-                            point.x, point.y, 30
+                        ctx.globalAlpha = life * 0.8;
+                        ctx.fillStyle = `hsl(${280 + life * 60}, 70%, ${50 + life * 30}%)`;
+                        ctx.beginPath();
+                        ctx.arc(
+                            this.particles[idx],
+                            this.particles[idx + 1],
+                            this.particles[idx + 5] * life,
+                            0,
+                            Math.PI * 2
                         );
-                        glow.addColorStop(0, `rgba(183, 148, 246, ${0.5 + pulse * 0.3})`);
-                        glow.addColorStop(1, 'transparent');
-                        
-                        this.ctx.fillStyle = glow;
-                        this.ctx.fillRect(point.x - 30, point.y - 30, 60, 60);
-                        
-                        // Star core
-                        this.ctx.fillStyle = 'white';
-                        this.ctx.shadowBlur = 20;
-                        this.ctx.shadowColor = 'rgba(183, 148, 246, 0.8)';
-                        this.ctx.beginPath();
-                        this.ctx.arc(point.x, point.y, 4 + pulse * 2, 0, Math.PI * 2);
-                        this.ctx.fill();
-                        this.ctx.shadowBlur = 0;
-                    });
+                        ctx.fill();
+                    }
+                    ctx.globalAlpha = 1;
                 }
             }
 
-            // Audio Visualization
+            // Audio Visualization System
             class AudioVisualizer {
                 constructor() {
                     this.audioContext = null;
                     this.analyser = null;
+                    this.source = null;
                     this.dataArray = null;
-                    this.bars = [];
+                    this.isInitialized = false;
                 }
 
-                init(audioElement) {
-                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    const source = this.audioContext.createMediaElementSource(audioElement);
-                    this.analyser = this.audioContext.createAnalyser();
-                    this.analyser.fftSize = 64;
+                async init(audioElement) {
+                    if (this.isInitialized) return;
                     
-                    source.connect(this.analyser);
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    this.analyser = this.audioContext.createAnalyser();
+                    this.analyser.fftSize = 256;
+                    
+                    this.source = this.audioContext.createMediaElementSource(audioElement);
+                    this.source.connect(this.analyser);
                     this.analyser.connect(this.audioContext.destination);
                     
                     this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
-                    
-                    // Create visual bars
-                    const container = document.getElementById('audioVisual');
-                    for (let i = 0; i < 32; i++) {
-                        const bar = document.createElement('div');
-                        bar.className = 'audio-bar';
-                        container.appendChild(bar);
-                        this.bars.push(bar);
-                    }
+                    this.isInitialized = true;
                 }
 
-                update() {
-                    if (!this.analyser) return;
-                    
+                getFrequencyData() {
+                    if (!this.isInitialized) return null;
                     this.analyser.getByteFrequencyData(this.dataArray);
+                    return this.dataArray;
+                }
+
+                renderBars(container) {
+                    if (!this.isInitialized) return;
                     
-                    this.bars.forEach((bar, i) => {
-                        const value = this.dataArray[i] || 0;
-                        const height = Math.max(5, (value / 255) * 80);
-                        bar.style.height = `${height}px`;
-                        
-                        // Color based on frequency
-                        const hue = 270 + (i / this.bars.length) * 60;
-                        bar.style.background = `linear-gradient(to top, hsl(${hue}, 70%, 50%), hsl(${hue}, 70%, 70%))`;
-                    });
+                    const data = this.getFrequencyData();
+                    const bars = container.children;
+                    
+                    // Create bars if needed
+                    if (bars.length === 0) {
+                        for (let i = 0; i < 32; i++) {
+                            const bar = document.createElement('div');
+                            bar.className = 'audio-bar';
+                            container.appendChild(bar);
+                        }
+                    }
+                    
+                    // Update bar heights based on frequency data
+                    for (let i = 0; i < bars.length; i++) {
+                        const value = data[i * 4] || 0;
+                        bars[i].style.height = `${(value / 255) * 100}%`;
+                    }
                 }
             }
 
-            // Blow Detection
-            class BlowDetector {
-                constructor() {
-                    this.stream = null;
-                    this.audioContext = null;
-                    this.analyser = null;
-                    this.dataArray = null;
-                    this.isListening = false;
+            // Living Constellation Creator
+            class ConstellationCreator {
+                constructor(canvas) {
+                    this.canvas = canvas;
+                    this.ctx = canvas.getContext('2d');
+                    this.points = [];
+                    this.connections = [];
+                    this.pulsePhase = 0;
                 }
 
-                async start() {
-                    try {
-                        this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                        this.audioContext = new AudioContext();
-                        const source = this.audioContext.createMediaStreamSource(this.stream);
-                        this.analyser = this.audioContext.createAnalyser();
-                        this.analyser.fftSize = 256;
-                        source.connect(this.analyser);
-                        
-                        this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
-                        this.isListening = true;
-                        
-                        // Show blow meter
-                        document.getElementById('blowMeter').classList.remove('hidden');
-                        
-                        this.detect();
-                    } catch (err) {
-                        console.error('Microphone access denied:', err);
-                        alert('Please allow microphone access to blow out candles!');
-                    }
-                }
-
-                detect() {
-                    if (!this.isListening) return;
+                addPoint(x, y) {
+                    const newPoint = { x, y, id: this.points.length };
                     
-                    this.analyser.getByteFrequencyData(this.dataArray);
-                    
-                    // Calculate low frequency energy (blow detection)
-                    let lowFreqEnergy = 0;
-                    for (let i = 0; i < 10; i++) {
-                        lowFreqEnergy += this.dataArray[i];
-                    }
-                    
-                    // Update visual meter
-                    const blowLevel = document.getElementById('blowLevel');
-                    const percentage = Math.min(100, (lowFreqEnergy / 1000) * 100);
-                    blowLevel.style.width = `${percentage}%`;
-                    
-                    // Threshold for blow detection
-                    if (lowFreqEnergy > 800) {
-                        this.onBlow();
-                    }
-                    
-                    requestAnimationFrame(() => this.detect());
-                }
-
-                onBlow() {
-                    // Extinguish candles
-                    document.querySelectorAll('.flame').forEach((flame, i) => {
-                        if (!flame.classList.contains('extinguished')) {
-                            setTimeout(() => {
-                                flame.classList.add('extinguished');
-                                state.candlesLit[i] = false;
-                            }, i * 200);
+                    // Auto-connect to nearby points (Delaunay-like)
+                    this.points.forEach(point => {
+                        const dist = Math.hypot(point.x - x, point.y - y);
+                        if (dist < 150 && dist > 20) {
+                            this.connections.push({
+                                from: point.id,
+                                to: newPoint.id,
+                                distance: dist
+                            });
                         }
                     });
                     
-                    // Stop listening after successful blow
-                    setTimeout(() => {
-                        this.stop();
-                    }, 1000);
+                    this.points.push(newPoint);
                 }
 
-                stop() {
-                    this.isListening = false;
-                    if (this.stream) {
-                        this.stream.getTracks().forEach(track => track.stop());
-                    }
-                    document.getElementById('blowMeter').classList.add('hidden');
+                clear() {
+                    this.points = [];
+                    this.connections = [];
+                }
+
+                update(deltaTime) {
+                    this.pulsePhase += deltaTime * 0.002;
+                }
+
+                render() {
+                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    
+                    // Draw connections with energy pulse
+                    this.ctx.strokeStyle = 'rgba(183, 148, 246, 0.3)';
+                    this.ctx.lineWidth = 2;
+                    
+                    this.connections.forEach((conn, i) => {
+                        const from = this.points[conn.from];
+                        const to = this.points[conn.to];
+                        if (!from || !to) return;
+                        
+                        const pulse = Math.sin(this.pulsePhase + i * 0.2) * 0.5 + 0.5;
+                        this.ctx.globalAlpha = 0.3 + pulse * 0.4;
+                        
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(from.x, from.y);
+                        this.ctx.lineTo(to.x, to.y);
+                        this.ctx.stroke();
+                        
+                        // Energy traveling along connection
+                        const t = (Math.sin(this.pulsePhase + i * 0.5) + 1) / 2;
+                        const energyX = from.x + (to.x - from.x) * t;
+                        const energyY = from.y + (to.y - from.y) * t;
+                        
+                        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                        this.ctx.beginPath();
+                        this.ctx.arc(energyX, energyY, 2, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    });
+                    
+                    // Draw stars with pulsing glow
+                    this.points.forEach((point, i) => {
+                        const pulse = Math.sin(this.pulsePhase + i * 0.3) * 0.5 + 0.5;
+                        
+                        // Glow
+                        const gradient = this.ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 20);
+                        gradient.addColorStop(0, `rgba(183, 148, 246, ${0.8 + pulse * 0.2})`);
+                        gradient.addColorStop(1, 'transparent');
+                        
+                        this.ctx.fillStyle = gradient;
+                        this.ctx.fillRect(point.x - 20, point.y - 20, 40, 40);
+                        
+                        // Star core
+                        this.ctx.fillStyle = 'white';
+                        this.ctx.globalAlpha = 1;
+                        this.ctx.beginPath();
+                        this.ctx.arc(point.x, point.y, 3 + pulse, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    });
+                    
+                    this.ctx.globalAlpha = 1;
                 }
             }
 
-            // Initialize everything
+            // Generative Music System
+            class GenerativeMusic {
+                constructor() {
+                    this.synth = null;
+                    this.isInitialized = false;
+                    this.scale = ['C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5'];
+                }
+
+                init() {
+                    if (this.isInitialized) return;
+                    this.synth = new Tone.PolySynth(Tone.Synth).toDestination();
+                    this.synth.set({
+                        oscillator: { type: 'sine' },
+                        envelope: { attack: 0.5, decay: 0.2, sustain: 0.3, release: 1 }
+                    });
+                    this.isInitialized = true;
+                }
+
+                playNote(x, y) {
+                    if (!this.isInitialized) return;
+                    const noteIndex = Math.floor((x / window.innerWidth) * this.scale.length);
+                    const note = this.scale[noteIndex];
+                    const volume = -20 + (y / window.innerHeight) * 10;
+                    this.synth.volume.value = volume;
+                    this.synth.triggerAttackRelease(note, '8n');
+                }
+
+                playChord() {
+                    if (!this.isInitialized) return;
+                    const chord = ['C4', 'E4', 'G4', 'C5'];
+                    this.synth.triggerAttackRelease(chord, '2n');
+                }
+            }
+
+            // Main Application Controller
             const init = () => {
-                const starField = new StarField(contexts.starCanvas);
-                const aurora = new Aurora(contexts.auroraCanvas);
-                const particles = new ParticleSystem(contexts.particleCanvas);
-                const constellation = new ConstellationCreator(contexts.constellationCanvas);
+                // Initialize all systems
+                const particleSystem = new ParticleSystem();
                 const audioViz = new AudioVisualizer();
-                const blowDetector = new BlowDetector();
+                const generativeMusic = new GenerativeMusic();
                 
-                // DOM elements
+                // Get DOM elements
                 const entryOverlay = document.getElementById('entryOverlay');
                 const mainContainer = document.getElementById('mainContainer');
                 const enterBtn = document.getElementById('enterBtn');
                 const bgMusic = document.getElementById('bgMusic');
-                const playBtn = document.getElementById('playBtn');
-                const pauseBtn = document.getElementById('pauseBtn');
+                const musicToggle = document.getElementById('musicToggle');
+                const audioVisual = document.getElementById('audioVisual');
+                const letterSection = document.getElementById('letterSection');
                 const micBtn = document.getElementById('micBtn');
                 const clearBtn = document.getElementById('clearConstellation');
-                const letterSection = document.getElementById('letterSection');
-                const hintBubble = document.getElementById('hintBubble');
                 
-                // Enter experience
+                // Canvas setup
+                const starCanvas = document.getElementById('starCanvas');
+                const auroraCanvas = document.getElementById('auroraCanvas');
+                const constellationCanvas = document.getElementById('constellationCanvas');
+                
+                const resizeCanvases = () => {
+                    [starCanvas, auroraCanvas, constellationCanvas].forEach(canvas => {
+                        canvas.width = window.innerWidth;
+                        canvas.height = window.innerHeight;
+                    });
+                };
+                
+                resizeCanvases();
+                window.addEventListener('resize', resizeCanvases);
+                
+                const starCtx = starCanvas.getContext('2d');
+                const auroraCtx = auroraCanvas.getContext('2d');
+                
+                const constellation = new ConstellationCreator(constellationCanvas);
+                
+                // Star field data
+                const stars = new Float32Array(300 * 5);
+                for (let i = 0; i < 300 * 5; i += 5) {
+                    stars[i] = Math.random();
+                    stars[i + 1] = Math.random();
+                    stars[i + 2] = Math.random() * 2 + 0.5;
+                    stars[i + 3] = Math.random() * 0.0005 + 0.0001;
+                    stars[i + 4] = Math.random() * Math.PI * 2;
+                }
+                
+                // Initialize event listeners (State Machine Pattern)
+                let appReady = false;
+                
+                // Enter button - state transition
                 enterBtn.addEventListener('click', async () => {
+                    if (currentState !== AppState.READY) return;
+                    
+                    currentState = AppState.ENTERING;
                     entryOverlay.classList.add('hidden');
                     mainContainer.style.opacity = '1';
                     
                     // Initialize audio
-                    audioViz.init(bgMusic);
+                    await audioViz.init(bgMusic);
+                    generativeMusic.init();
                     
-                    // Try to play music
                     try {
                         await bgMusic.play();
-                        state.isPlaying = true;
+                        store.setState(() => ({ isPlaying: true }));
                     } catch (e) {
-                        console.log('Audio autoplay prevented');
+                        console.log('Audio prevented');
                     }
                     
-                    // Animate letter
+                    currentState = AppState.ACTIVE;
+                    
+                    // Start animations
                     setTimeout(() => {
                         letterSection.classList.add('visible');
                     }, 500);
                 });
                 
-                // Music controls
-                playBtn.addEventListener('click', () => {
-                    bgMusic.play();
-                    state.isPlaying = true;
-                });
-                
-                pauseBtn.addEventListener('click', () => {
-                    bgMusic.pause();
-                    state.isPlaying = false;
-                });
-                
-                // Constellation interaction
-                document.addEventListener('click', (e) => {
-                    // Check if clicking on canvas area (not buttons)
-                    if (e.target.tagName !== 'BUTTON' && 
-                        !e.target.closest('.glass-card') && 
-                        !e.target.closest('.portal-overlay')) {
-                        constellation.addStar(e.clientX, e.clientY);
-                        particles.spawn(e.clientX, e.clientY);
+                // Music toggle
+                musicToggle.addEventListener('click', () => {
+                    if (currentState !== AppState.ACTIVE) return;
+                    
+                    const isPlaying = store.getState().isPlaying;
+                    if (isPlaying) {
+                        bgMusic.pause();
+                    } else {
+                        bgMusic.play();
                     }
+                    store.setState(() => ({ isPlaying: !isPlaying }));
+                });
+                
+                // Constellation interactions
+                constellationCanvas.addEventListener('click', (e) => {
+                    if (currentState !== AppState.ACTIVE) return;
+                    constellation.addPoint(e.clientX, e.clientY);
+                    generativeMusic.playNote(e.clientX, e.clientY);
                 });
                 
                 clearBtn.addEventListener('click', () => {
@@ -991,105 +839,154 @@
                 // Candle interactions
                 document.querySelectorAll('.flame').forEach((flame, i) => {
                     flame.addEventListener('click', () => {
-                        if (!flame.classList.contains('extinguished')) {
-                            flame.classList.add('extinguished');
-                            state.candlesLit[i] = false;
-                            particles.spawn(
-                                flame.getBoundingClientRect().left + 12,
-                                flame.getBoundingClientRect().top
-                            );
-                        }
+                        flame.classList.add('extinguished');
+                        generativeMusic.playChord();
                     });
                 });
                 
                 // Microphone blow detection
-                micBtn.addEventListener('click', () => {
-                    blowDetector.start();
+                micBtn.addEventListener('click', async () => {
+                    try {
+                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        const audioContext = new AudioContext();
+                        const source = audioContext.createMediaStreamSource(stream);
+                        const analyser = audioContext.createAnalyser();
+                        analyser.fftSize = 256;
+                        source.connect(analyser);
+                        
+                        const dataArray = new Uint8Array(analyser.frequencyBinCount);
+                        
+                        const checkBlow = () => {
+                            analyser.getByteFrequencyData(dataArray);
+                            const lowFreqSum = dataArray.slice(0, 10).reduce((a, b) => a + b, 0);
+                            
+                            if (lowFreqSum > 1000) {
+                                document.querySelectorAll('.flame').forEach(flame => {
+                                    flame.classList.add('extinguished');
+                                });
+                                generativeMusic.playChord();
+                            } else {
+                                requestAnimationFrame(checkBlow);
+                            }
+                        };
+                        
+                        checkBlow();
+                    } catch (e) {
+                        console.log('Mic access denied');
+                    }
                 });
                 
                 // Mouse tracking
                 document.addEventListener('mousemove', (e) => {
-                    state.mouseX = e.clientX;
-                    state.mouseY = e.clientY;
+                    store.setState(() => ({
+                        mouseX: e.clientX / window.innerWidth,
+                        mouseY: e.clientY / window.innerHeight
+                    }));
                     
                     document.documentElement.style.setProperty('--mouse-x', `${(e.clientX / window.innerWidth) * 100}%`);
                     document.documentElement.style.setProperty('--mouse-y', `${(e.clientY / window.innerHeight) * 100}%`);
                 });
                 
-                // Morphing text
+                // Click particles
+                document.addEventListener('click', (e) => {
+                    if (e.target.tagName === 'BUTTON') return;
+                    if (currentState === AppState.ACTIVE) {
+                        particleSystem.spawn(e.clientX, e.clientY, 10);
+                    }
+                });
+                
+                // Morphing text effect
                 const morphText = document.getElementById('morphText');
                 const messages = [
                     'Happy Birthday',
                     'Beautiful Soul',
                     'Cosmic Wonder',
                     'Infinite Joy',
-                    'Stellar Being',
-                    'Universe\'s Gift',
-                    'Radiant Light',
-                    'Pure Magic'
+                    'Stellar Being'
                 ];
                 let messageIndex = 0;
                 
                 setInterval(() => {
                     morphText.style.opacity = '0';
-                    morphText.style.transform = 'scale(0.8)';
                     setTimeout(() => {
                         messageIndex = (messageIndex + 1) % messages.length;
                         morphText.textContent = messages[messageIndex];
                         morphText.style.opacity = '1';
-                        morphText.style.transform = 'scale(1)';
                     }, 500);
                 }, 3000);
                 
-                // Show hints
-                const showHint = (text, x, y) => {
-                    hintBubble.textContent = text;
-                    hintBubble.style.left = `${x}px`;
-                    hintBubble.style.top = `${y - 50}px`;
-                    hintBubble.classList.add('show');
-                    
-                    setTimeout(() => {
-                        hintBubble.classList.remove('show');
-                    }, 3000);
-                };
+                // Main render loop
+                let lastTime = 0;
+                let auroraTime = 0;
                 
-                // Tutorial hints
-                setTimeout(() => {
-                    if (state.constellationPoints.length === 0) {
-                        showHint('Click anywhere to create stars!', window.innerWidth / 2, window.innerHeight / 2);
+                const render = (currentTime) => {
+                    const deltaTime = currentTime - lastTime;
+                    lastTime = currentTime;
+                    auroraTime += deltaTime * 0.0001;
+                    
+                    const state = store.getState();
+                    
+                    // Clear canvases
+                    starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+                    auroraCtx.clearRect(0, 0, auroraCanvas.width, auroraCanvas.height);
+                    
+                    // Render stars
+                    starCtx.fillStyle = 'white';
+                    for (let i = 0; i < 300 * 5; i += 5) {
+                        const x = stars[i] * starCanvas.width;
+                        const y = stars[i + 1] * starCanvas.height;
+                        const size = stars[i + 2];
+                        const phase = stars[i + 4] + currentTime * stars[i + 3];
+                        
+                        const brightness = Math.sin(phase) * 0.5 + 0.5;
+                        starCtx.globalAlpha = brightness * 0.8 + 0.2;
+                        
+                        starCtx.beginPath();
+                        starCtx.arc(x, y, size, 0, Math.PI * 2);
+                        starCtx.fill();
                     }
-                }, 5000);
-                
-                // Main animation loop
-                const animate = () => {
-                    starField.update();
-                    starField.render();
                     
-                    aurora.update();
-                    aurora.render();
+                    // Render aurora using Perlin noise
+                    for (let x = 0; x < auroraCanvas.width; x += 10) {
+                        for (let y = 0; y < auroraCanvas.height; y += 10) {
+                            const noise = perlin.noise(x * 0.005, y * 0.005, auroraTime);
+                            if (noise > 0.3) {
+                                const alpha = (noise - 0.3) * 2;
+                                auroraCtx.fillStyle = `hsla(${280 + noise * 60}, 70%, 50%, ${alpha * 0.3})`;
+                                auroraCtx.fillRect(x, y, 10, 10);
+                            }
+                        }
+                    }
                     
-                    particles.update();
-                    particles.render();
+                    // Update and render particles
+                    particleSystem.update(deltaTime, state.mouseX * window.innerWidth, state.mouseY * window.innerHeight);
+                    particleSystem.render(starCtx);
                     
-                    constellation.update();
+                    // Update constellation
+                    constellation.update(deltaTime);
                     constellation.render();
                     
+                    // Update audio visualization
                     if (state.isPlaying) {
-                        audioViz.update();
+                        audioViz.renderBars(audioVisual);
                     }
                     
-                    requestAnimationFrame(animate);
+                    requestAnimationFrame(render);
                 };
                 
-                animate();
+                // Start when ready
+                currentState = AppState.READY;
+                requestAnimationFrame(render);
             };
             
-            // Start when DOM is ready
+            // Initialize when DOM is ready
             if (document.readyState === 'loading') {
                 document.addEventListener('DOMContentLoaded', init);
             } else {
                 init();
             }
+            
+            return { init };
         })();
     </script>
 </body>
