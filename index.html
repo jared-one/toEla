@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ela's Cosmic Birthday - A Living Universe</title>
+    <title>For Ela - A Universe Awaits Your Celebration</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;1,400&family=Inter:wght@300;400;600&display=swap');
 
@@ -15,6 +14,7 @@
             --cosmic-accent: #b794f6;
             --cosmic-glow: #9f7aea;
             --cosmic-text: #f0e6ff;
+            --scroll-progress: 0;
             --mouse-x: 50%;
             --mouse-y: 50%;
         }
@@ -57,7 +57,18 @@
             pointer-events: none;
         }
 
-        /* Cosmic Shimmer */
+        /* Entrance Animation */
+        .entry-content {
+            text-align: center;
+            animation: breathe 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-15px) scale(1.02); }
+        }
+
+        /* Cosmic Text Effect */
         .cosmic-shimmer {
             background: linear-gradient(90deg, var(--cosmic-text), var(--cosmic-accent), var(--cosmic-glow), var(--cosmic-accent), var(--cosmic-text));
             background-size: 200% auto;
@@ -72,7 +83,7 @@
             to { background-position: 200% center; }
         }
 
-        /* Glass Cards */
+        /* Glass Morphism Cards */
         .glass-card {
             background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.05));
             backdrop-filter: blur(20px);
@@ -84,19 +95,35 @@
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.05);
         }
 
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            inset: -100%;
+            background: conic-gradient(from 0deg at 50% 50%, transparent, var(--cosmic-accent), transparent);
+            animation: spin 20s linear infinite;
+            opacity: 0.05;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Canvas Layers */
-        #starCanvas, #auroraCanvas, #constellationCanvas {
+        #starCanvas {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             pointer-events: none;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 3s ease;
         }
 
-        #starCanvas { z-index: 1; }
-        #auroraCanvas { z-index: 2; mix-blend-mode: screen; opacity: 0.3; }
-        #constellationCanvas { z-index: 3; pointer-events: all; }
+        #starCanvas.visible {
+            opacity: 1;
+        }
 
         /* Audio Visualizer */
         .audio-visual {
@@ -104,82 +131,65 @@
             justify-content: center;
             align-items: flex-end;
             gap: 4px;
-            height: 60px;
+            height: 40px;
             margin: 20px 0;
         }
 
         .audio-bar {
-            width: 6px;
+            width: 4px;
             background: linear-gradient(to top, var(--cosmic-accent), var(--cosmic-glow));
-            border-radius: 3px;
+            border-radius: 2px;
             transform-origin: bottom;
-            transition: height 0.1s ease-out;
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* 3D Cake Container */
-        .cake-3d {
-            width: 300px;
-            height: 300px;
-            margin: 2rem auto;
-            perspective: 1000px;
+        .audio-bar.playing {
+            animation: wave 1s ease-in-out infinite;
         }
 
-        .cake-body {
-            width: 100%;
-            height: 100%;
+        .audio-bar:nth-child(1) { height: 35%; animation-delay: 0ms; }
+        .audio-bar:nth-child(2) { height: 55%; animation-delay: 100ms; }
+        .audio-bar:nth-child(3) { height: 45%; animation-delay: 200ms; }
+        .audio-bar:nth-child(4) { height: 70%; animation-delay: 300ms; }
+        .audio-bar:nth-child(5) { height: 50%; animation-delay: 400ms; }
+        .audio-bar:nth-child(6) { height: 60%; animation-delay: 500ms; }
+        .audio-bar:nth-child(7) { height: 40%; animation-delay: 600ms; }
+
+        @keyframes wave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+
+        /* Interactive Elements */
+        .enter-button {
+            padding: 18px 50px;
+            font-size: 1.2em;
+            background: transparent;
+            border: 1px solid rgba(183, 148, 246, 0.3);
+            color: rgba(255, 255, 255, 0.8);
+            border-radius: 50px;
+            cursor: pointer;
             position: relative;
-            transform-style: preserve-3d;
-            animation: rotateCake 20s infinite linear;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            backdrop-filter: blur(10px);
         }
 
-        @keyframes rotateCake {
-            from { transform: rotateY(0deg); }
-            to { transform: rotateY(360deg); }
+        .enter-button:hover {
+            border-color: rgba(183, 148, 246, 0.6);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(183, 148, 246, 0.3);
         }
 
-        .candle {
-            position: absolute;
-            width: 10px;
-            height: 40px;
-            background: linear-gradient(to top, #f4e4c1, #fff);
-            top: -40px;
-            border-radius: 5px;
-        }
-
-        .flame {
-            position: absolute;
-            width: 20px;
-            height: 30px;
-            background: radial-gradient(circle, #ffa500, #ff4500);
-            top: -30px;
-            left: -5px;
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            animation: flicker 0.5s infinite alternate;
-            transition: opacity 0.5s;
-        }
-
-        .flame.extinguished {
-            opacity: 0;
-        }
-
-        @keyframes flicker {
-            0% { transform: scale(1) rotate(-2deg); }
-            100% { transform: scale(1.1) rotate(2deg); }
-        }
-
-        /* Morphing Text */
-        #morphText {
-            font-size: 3rem;
-            text-align: center;
-            margin: 2rem 0;
-        }
-
-        /* Letter Content */
+        /* Letter Content Animation */
         .letter p {
             line-height: 1.9;
             margin-bottom: 25px;
             font-size: 1.15em;
             color: var(--cosmic-text);
+            position: relative;
+            z-index: 1;
             opacity: 0;
             transform: translateY(20px);
         }
@@ -204,12 +214,26 @@
         .letter p:nth-child(7) { animation-delay: 0.7s; }
         .letter p:nth-child(8) { animation-delay: 0.8s; }
 
-        /* SVG Filters */
-        .breathing-text {
-            filter: url(#breathe);
+        .letter em {
+            color: var(--cosmic-accent);
+            font-style: normal;
+            font-weight: 500;
+            transition: all 0.3s;
         }
 
-        /* Responsive */
+        /* Birthday Features */
+        .feature-card {
+            transform: translateY(30px);
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .feature-card.visible {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
             h1 { font-size: 2em; }
             .letter { padding: 30px 20px; }
@@ -226,768 +250,365 @@
     </style>
 </head>
 <body>
-    <!-- SVG Filters for Organic Effects -->
-    <svg width="0" height="0">
-        <defs>
-            <filter id="breathe">
-                <feTurbulence type="turbulence" baseFrequency="0.02" numOctaves="2" result="turbulence" seed="1">
-                    <animate attributeName="baseFrequency" from="0.02" to="0.025" dur="4s" repeatCount="indefinite"/>
-                </feTurbulence>
-                <feDisplacementMap in="SourceGraphic" in2="turbulence" scale="3" xChannelSelector="R" yChannelSelector="G"/>
-            </filter>
-        </defs>
-    </svg>
-
-    <!-- Canvas Layers -->
+    <!-- Star Canvas Background -->
     <canvas id="starCanvas"></canvas>
-    <canvas id="auroraCanvas"></canvas>
-    <canvas id="constellationCanvas"></canvas>
 
     <!-- Entry Portal -->
-    <div class="portal-overlay" id="entryOverlay" role="dialog" aria-modal="true">
-        <div class="text-center p-8">
-            <h1 class="cosmic-shimmer mb-6 breathing-text">A Cosmic Birthday Journey</h1>
-            <p class="text-xl mb-8 opacity-80">For Ela, written in stardust and dreams</p>
-            <button class="px-8 py-4 border border-purple-400/50 rounded-full hover:bg-purple-900/20 transition-all" id="enterBtn">
-                Enter the Universe ✨
-            </button>
+    <div class="portal-overlay" id="entryOverlay">
+        <div class="entry-content">
+            <h1 class="cosmic-shimmer mb-6">A Birthday Journey Through the Stars</h1>
+            <p class="text-xl mb-8 opacity-80">For Ela, who deserves the universe</p>
+            <button class="enter-button" id="enterBtn">Enter & Listen ✨</button>
         </div>
     </div>
 
     <!-- Main Container -->
-    <div class="container mx-auto px-4 py-8 relative z-10 opacity-0" id="mainContainer">
+    <div class="container mx-auto px-4 py-8 relative z-10 opacity-0 transition-all duration-1500" id="mainContainer" style="transition: opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1);">
         
         <!-- Header -->
         <header class="text-center mb-12">
             <h1 class="cosmic-shimmer">Happy Birthday, Ela</h1>
-            <p class="text-xl mt-4 opacity-90">Today the universe dances for you</p>
+            <p class="text-xl mt-4 opacity-90">Today the cosmos celebrates you</p>
         </header>
 
-        <!-- Audio Visualizer -->
-        <section class="max-w-lg mx-auto mb-12 glass-card" aria-label="Music Visualizer">
-            <h2 class="text-center text-xl mb-4 text-purple-300">♪ Your Birthday Symphony ♪</h2>
+        <!-- Audio Section -->
+        <section class="max-w-lg mx-auto mb-12 glass-card feature-card" id="audioSection">
+            <h2 class="text-center text-xl mb-4 text-purple-300">♪ Pisces - Tony Ann (Piano Cover) ♪</h2>
+            <p class="text-center text-sm mb-4 opacity-70">A melody for your special day</p>
             <div class="audio-visual" id="audioVisual">
-                <!-- Bars will be dynamically sized based on frequency data -->
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
             </div>
             <audio id="bgMusic" loop>
                 <source src="Pisces - Tony Ann (Piano Cover).mp3" type="audio/mpeg">
             </audio>
-            <button class="w-full mt-4 px-4 py-2 bg-purple-900/30 rounded-lg hover:bg-purple-900/50 transition-colors" id="musicToggle">
-                Play/Pause Music
-            </button>
         </section>
 
-        <!-- Interactive Constellation Creator -->
-        <section class="max-w-4xl mx-auto mb-12 glass-card">
-            <h2 class="text-2xl mb-6 text-center text-purple-300">Create Your Constellation</h2>
-            <p class="text-center mb-4 opacity-70">Click to place stars, they'll connect automatically</p>
-            <button class="px-4 py-2 bg-purple-600/30 rounded-lg" id="clearConstellation">Clear Stars</button>
-        </section>
-
-        <!-- 3D Birthday Cake with Blow Detection -->
-        <section class="max-w-lg mx-auto mb-12 glass-card text-center">
-            <h2 class="text-2xl mb-6 text-purple-300">Blow Out Your Candles</h2>
-            <div class="cake-3d">
-                <div class="cake-body">
-                    <div style="position: absolute; width: 200px; height: 80px; background: linear-gradient(135deg, #8b4513, #d2691e); left: 50px; top: 100px; border-radius: 10px;">
-                        <div class="candle" style="left: 50px;">
-                            <div class="flame" id="flame1"></div>
-                        </div>
-                        <div class="candle" style="left: 95px;">
-                            <div class="flame" id="flame2"></div>
-                        </div>
-                        <div class="candle" style="left: 140px;">
-                            <div class="flame" id="flame3"></div>
-                        </div>
-                    </div>
+        <!-- Birthday Countdown -->
+        <section class="max-w-lg mx-auto mb-12 glass-card text-center feature-card" id="countdownSection">
+            <h2 class="text-2xl mb-6 text-purple-300">Your Next Solar Return</h2>
+            <div class="grid grid-cols-4 gap-4">
+                <div>
+                    <div class="text-3xl font-bold cosmic-shimmer" id="days">365</div>
+                    <div class="text-sm opacity-70">Days</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold cosmic-shimmer" id="hours">00</div>
+                    <div class="text-sm opacity-70">Hours</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold cosmic-shimmer" id="minutes">00</div>
+                    <div class="text-sm opacity-70">Minutes</div>
+                </div>
+                <div>
+                    <div class="text-3xl font-bold cosmic-shimmer" id="seconds">00</div>
+                    <div class="text-sm opacity-70">Seconds</div>
                 </div>
             </div>
-            <button class="px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-full" id="micBtn">
-                🎤 Enable Microphone to Blow
-            </button>
-            <p class="text-sm mt-2 opacity-70">Or click the candles to extinguish</p>
         </section>
 
-        <!-- Morphing Birthday Wishes -->
-        <section class="max-w-lg mx-auto mb-12 glass-card text-center">
-            <div id="morphText" class="cosmic-shimmer">Happy Birthday</div>
+        <!-- Interactive Wish Generator -->
+        <section class="max-w-lg mx-auto mb-12 glass-card text-center feature-card" id="wishSection">
+            <h2 class="text-2xl mb-6 text-purple-300">Birthday Wishes from the Universe</h2>
+            <p class="text-lg cosmic-shimmer" id="wishText">Click below for a cosmic wish</p>
+            <button class="mt-6 px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-800 text-white rounded-full hover:from-purple-700 hover:to-purple-900 transition-all" id="wishBtn">
+                Generate New Wish ✨
+            </button>
         </section>
 
         <!-- Birthday Letter -->
-        <article class="max-w-4xl mx-auto mb-12 glass-card letter" id="letterSection">
-            <h2 class="text-3xl text-center mb-8 cosmic-shimmer">To Ela, Written in the Language of Stars</h2>
+        <article class="max-w-4xl mx-auto mb-12 glass-card letter feature-card" id="letterSection">
+            <h2 class="text-3xl text-center mb-8 cosmic-shimmer">To Ela, Written in Stardust</h2>
             <div id="letterContent">
                 <p>
-                    <em>Ela</em>, today the cosmos pauses in its eternal dance to celebrate the moment you arrived in this universe. Not with fanfare or cosmic explosions, but with the quiet recognition that something essential had just been added to existence.
+                    <em>Ela</em>, in the vast expanse of time and space, among billions of souls dancing through existence, there is only one you. Today marks another revolution around the sun, another chapter in the cosmic story that is uniquely, brilliantly, wonderfully yours.
                 </p>
                 <p>
-                    You are the kind of rare that astronomers spend lifetimes searching for — a phenomenon that defies easy explanation. Your beauty isn't just in the constellation of your features, though they could inspire poets to abandon metaphor for simple truth. It lives in the gravity of your presence, the way you bend the light around you into something warmer, softer, more hopeful.
+                    Like stars that burn brightest in the darkest skies, your presence illuminates every room you enter. Not with the harsh glare of artificial light, but with the gentle radiance of someone who carries their own constellation within. You are the kind of person who makes others believe in magic again, simply by being yourself.
                 </p>
                 <p>
-                    Like distant stars whose light takes years to reach us, the full magnitude of who you are reveals itself slowly, in moments that catch us by surprise. In the way kindness flows from you as naturally as light from the sun. In your strength that doesn't announce itself but simply exists, constant as the northern star.
+                    Your beauty transcends what eyes can capture — it lives in the space between heartbeats, in the pause before laughter, in the quiet moments when you think no one is watching. It's woven into your kindness, threaded through your strength, and sparkles in the way you see wonder where others might see ordinary.
                 </p>
                 <p>
-                    You transform the ordinary into the extraordinary simply by experiencing it. A Tuesday becomes a celebration. A simple song becomes a symphony. A moment becomes a memory worth keeping forever. This is your gift — not just living in the world, but elevating it, one breath at a time.
+                    You possess that rare quality of turning moments into memories without trying. Your smile could convince skeptics that happiness is worth pursuing. Your laugh could make cynics believe in joy again. You don't just exist in this world; you transform it, one gentle gesture at a time.
                 </p>
                 <p>
-                    On this birthday, as you stand at the threshold of another year, know that you are not just loved but <em>essential</em>. The universe is more beautiful because you're in it. Every person you've touched carries a piece of your light with them, making the darkness a little less dark.
+                    There's a particular magic in how you navigate life — with grace when it's smooth, with courage when it's rough, always with that inner light that refuses to be dimmed. You're the proof that strength doesn't always roar; sometimes it's the quiet voice at the end of the day saying, "I'll try again tomorrow."
                 </p>
                 <p>
-                    May this new year bring you joy that matches your capacity to give it. May you find wonder in unexpected places. May you always remember that in the grand equation of existence, you are the variable that makes everything else make sense.
+                    On this birthday, as candles flicker like tiny stars waiting for your wishes, know that you are celebrated not just today, but in every moment your existence touches another soul. You are loved not for what you do, but for who you are — completely, unconditionally, cosmically.
                 </p>
                 <p>
-                    Happy Birthday, beautiful soul. The stars themselves are jealous of your shine.
+                    May this new year of your life bring you adventures that match your spirit, joy that matches your heart's capacity, and love that mirrors what you give to the world. May you always remember that in the grand symphony of the universe, your note is essential, irreplaceable, <em>perfect</em>.
                 </p>
-                <p class="text-center mt-8">
-                    With infinite love and cosmic admiration ✨
+                <p>
+                    Happy Birthday, beautiful soul. The universe is better because you're in it. ✨
                 </p>
             </div>
         </article>
 
-        <!-- Footer -->
+        <!-- Closing Message -->
         <footer class="text-center py-12">
-            <h2 class="text-2xl cosmic-shimmer mb-4">The universe is yours today</h2>
-            <p class="opacity-80">Move your mouse to influence gravity</p>
+            <h2 class="text-2xl cosmic-shimmer mb-4">With infinite love and stardust</h2>
+            <p class="opacity-80">Click anywhere to create birthday stars</p>
         </footer>
     </div>
 
     <script>
         'use strict';
 
-        // Advanced Cosmic Birthday Experience with Full Feature Implementation
+        // Comprehensive Birthday Experience
         const CosmicBirthday = (() => {
-            // State Machine for Robust Event Architecture
-            const AppState = {
-                LOADING: 'loading',
-                READY: 'ready',
-                ENTERING: 'entering',
-                ACTIVE: 'active'
-            };
-
-            let currentState = AppState.LOADING;
-
-            // Immutable State Store with Structural Sharing
-            const createStore = (initialState) => {
-                let state = Object.freeze({...initialState});
-                const listeners = new Set();
-                
-                return {
-                    getState: () => state,
-                    setState: (updater) => {
-                        const newState = Object.freeze({
-                            ...state,
-                            ...updater(state)
-                        });
-                        state = newState;
-                        listeners.forEach(fn => fn(newState));
-                        return newState;
-                    },
-                    subscribe: (fn) => {
-                        listeners.add(fn);
-                        return () => listeners.delete(fn);
-                    }
-                };
-            };
-
-            const store = createStore({
+            // State Management
+            const state = {
                 mouseX: 0.5,
                 mouseY: 0.5,
                 isPlaying: false,
-                particles: new Float32Array(10000 * 6), // x, y, vx, vy, life, size
-                constellation: [],
-                audioData: new Uint8Array(128),
-                candlesLit: [true, true, true]
-            });
+                particles: [],
+                birthdayDate: null
+            };
 
-            // Perlin Noise Implementation for Aurora Effects
-            class PerlinNoise {
-                constructor() {
-                    this.perm = new Uint8Array(512);
-                    const p = new Uint8Array(256);
-                    for (let i = 0; i < 256; i++) p[i] = i;
-                    for (let i = 255; i > 0; i--) {
-                        const j = Math.floor(Math.random() * (i + 1));
-                        [p[i], p[j]] = [p[j], p[i]];
-                    }
-                    for (let i = 0; i < 512; i++) {
-                        this.perm[i] = p[i & 255];
-                    }
+            // Birthday Wishes Array
+            const wishes = [
+                "May your dreams be as infinite as the cosmos",
+                "Another year of making the universe brighter",
+                "You're the reason stars learned to shine",
+                "Today, even gravity celebrates you",
+                "May stardust follow your every step",
+                "The universe conspired to create perfection: you",
+                "Another orbit, another year of your magic",
+                "Galaxies spin in celebration of your existence"
+            ];
+
+            // Initialize Canvas and Stars
+            const initCanvas = () => {
+                const canvas = document.getElementById('starCanvas');
+                if (!canvas) return null;
+                
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas size
+                const resizeCanvas = () => {
+                    canvas.width = window.innerWidth;
+                    canvas.height = window.innerHeight;
+                };
+                
+                resizeCanvas();
+                window.addEventListener('resize', resizeCanvas);
+
+                // Star data
+                const stars = [];
+                const starCount = 200;
+                
+                // Initialize stars
+                for (let i = 0; i < starCount; i++) {
+                    stars.push({
+                        x: Math.random(),
+                        y: Math.random(),
+                        size: Math.random() * 2 + 0.5,
+                        speed: Math.random() * 0.0005 + 0.0001,
+                        brightness: Math.random()
+                    });
                 }
 
-                noise(x, y, z = 0) {
-                    const X = Math.floor(x) & 255;
-                    const Y = Math.floor(y) & 255;
-                    const Z = Math.floor(z) & 255;
+                // Animation loop
+                const animate = () => {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
                     
-                    x -= Math.floor(x);
-                    y -= Math.floor(y);
-                    z -= Math.floor(z);
-                    
-                    const u = this.fade(x);
-                    const v = this.fade(y);
-                    const w = this.fade(z);
-                    
-                    const A = this.perm[X] + Y;
-                    const AA = this.perm[A] + Z;
-                    const AB = this.perm[A + 1] + Z;
-                    const B = this.perm[X + 1] + Y;
-                    const BA = this.perm[B] + Z;
-                    const BB = this.perm[B + 1] + Z;
-                    
-                    return this.lerp(w,
-                        this.lerp(v,
-                            this.lerp(u, this.grad(this.perm[AA], x, y, z),
-                                        this.grad(this.perm[BA], x - 1, y, z)),
-                            this.lerp(u, this.grad(this.perm[AB], x, y - 1, z),
-                                        this.grad(this.perm[BB], x - 1, y - 1, z))),
-                        this.lerp(v,
-                            this.lerp(u, this.grad(this.perm[AA + 1], x, y, z - 1),
-                                        this.grad(this.perm[BA + 1], x - 1, y, z - 1)),
-                            this.lerp(u, this.grad(this.perm[AB + 1], x, y - 1, z - 1),
-                                        this.grad(this.perm[BB + 1], x - 1, y - 1, z - 1))));
-                }
+                    // Create gradient background
+                    const gradient = ctx.createRadialGradient(
+                        canvas.width * state.mouseX,
+                        canvas.height * state.mouseY,
+                        0,
+                        canvas.width / 2,
+                        canvas.height / 2,
+                        canvas.width
+                    );
+                    gradient.addColorStop(0, 'rgba(159, 122, 234, 0.02)');
+                    gradient.addColorStop(1, 'transparent');
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-                fade(t) {
-                    return t * t * t * (t * (t * 6 - 15) + 10);
-                }
-
-                lerp(t, a, b) {
-                    return a + t * (b - a);
-                }
-
-                grad(hash, x, y, z) {
-                    const h = hash & 15;
-                    const u = h < 8 ? x : y;
-                    const v = h < 4 ? y : h === 12 || h === 14 ? x : z;
-                    return ((h & 1) === 0 ? u : -u) + ((h & 2) === 0 ? v : -v);
-                }
-            }
-
-            const perlin = new PerlinNoise();
-
-            // Advanced Particle System with TypedArrays
-            class ParticleSystem {
-                constructor(maxParticles = 10000) {
-                    this.maxParticles = maxParticles;
-                    this.particles = new Float32Array(maxParticles * 6);
-                    this.activeCount = 0;
-                }
-
-                spawn(x, y, count = 5) {
-                    for (let i = 0; i < count && this.activeCount < this.maxParticles; i++) {
-                        const idx = this.activeCount * 6;
-                        const angle = Math.random() * Math.PI * 2;
-                        const speed = Math.random() * 3 + 1;
+                    // Draw stars
+                    stars.forEach(star => {
+                        // Update brightness for twinkling
+                        star.brightness += (Math.random() - 0.5) * 0.05;
+                        star.brightness = Math.max(0.3, Math.min(1, star.brightness));
                         
-                        this.particles[idx] = x;
-                        this.particles[idx + 1] = y;
-                        this.particles[idx + 2] = Math.cos(angle) * speed;
-                        this.particles[idx + 3] = Math.sin(angle) * speed - 2;
-                        this.particles[idx + 4] = 1.0;
-                        this.particles[idx + 5] = Math.random() * 4 + 2;
-                        
-                        this.activeCount++;
-                    }
-                }
-
-                update(deltaTime, mouseX, mouseY) {
-                    const dt = deltaTime * 0.001;
-                    let writeIdx = 0;
-                    
-                    for (let i = 0; i < this.activeCount; i++) {
-                        const idx = i * 6;
-                        
-                        // Gravitational pull toward mouse
-                        const dx = mouseX - this.particles[idx];
-                        const dy = mouseY - this.particles[idx + 1];
-                        const dist = Math.sqrt(dx * dx + dy * dy);
-                        
-                        if (dist > 10) {
-                            const force = 500 / (dist * dist);
-                            this.particles[idx + 2] += (dx / dist) * force * dt;
-                            this.particles[idx + 3] += (dy / dist) * force * dt;
-                        }
-                        
-                        // Update position
-                        this.particles[idx] += this.particles[idx + 2] * dt * 60;
-                        this.particles[idx + 1] += this.particles[idx + 3] * dt * 60;
-                        
-                        // Apply damping
-                        this.particles[idx + 2] *= 0.99;
-                        this.particles[idx + 3] *= 0.99;
-                        
-                        // Decay life
-                        this.particles[idx + 4] -= dt * 0.3;
-                        
-                        // Keep alive particles
-                        if (this.particles[idx + 4] > 0) {
-                            if (writeIdx !== i) {
-                                for (let j = 0; j < 6; j++) {
-                                    this.particles[writeIdx * 6 + j] = this.particles[idx + j];
-                                }
-                            }
-                            writeIdx++;
-                        }
-                    }
-                    
-                    this.activeCount = writeIdx;
-                }
-
-                render(ctx) {
-                    for (let i = 0; i < this.activeCount; i++) {
-                        const idx = i * 6;
-                        const life = this.particles[idx + 4];
-                        
-                        ctx.globalAlpha = life * 0.8;
-                        ctx.fillStyle = `hsl(${280 + life * 60}, 70%, ${50 + life * 30}%)`;
                         ctx.beginPath();
                         ctx.arc(
-                            this.particles[idx],
-                            this.particles[idx + 1],
-                            this.particles[idx + 5] * life,
+                            star.x * canvas.width,
+                            star.y * canvas.height,
+                            star.size,
                             0,
                             Math.PI * 2
                         );
+                        ctx.fillStyle = `rgba(255, 255, 255, ${star.brightness})`;
                         ctx.fill();
-                    }
-                    ctx.globalAlpha = 1;
-                }
-            }
+                    });
 
-            // Audio Visualization System
-            class AudioVisualizer {
-                constructor() {
-                    this.audioContext = null;
-                    this.analyser = null;
-                    this.source = null;
-                    this.dataArray = null;
-                    this.isInitialized = false;
-                }
-
-                async init(audioElement) {
-                    if (this.isInitialized) return;
-                    
-                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    this.analyser = this.audioContext.createAnalyser();
-                    this.analyser.fftSize = 256;
-                    
-                    this.source = this.audioContext.createMediaElementSource(audioElement);
-                    this.source.connect(this.analyser);
-                    this.analyser.connect(this.audioContext.destination);
-                    
-                    this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
-                    this.isInitialized = true;
-                }
-
-                getFrequencyData() {
-                    if (!this.isInitialized) return null;
-                    this.analyser.getByteFrequencyData(this.dataArray);
-                    return this.dataArray;
-                }
-
-                renderBars(container) {
-                    if (!this.isInitialized) return;
-                    
-                    const data = this.getFrequencyData();
-                    const bars = container.children;
-                    
-                    // Create bars if needed
-                    if (bars.length === 0) {
-                        for (let i = 0; i < 32; i++) {
-                            const bar = document.createElement('div');
-                            bar.className = 'audio-bar';
-                            container.appendChild(bar);
+                    // Draw click particles
+                    state.particles = state.particles.filter(p => {
+                        p.y -= p.speed;
+                        p.life -= 0.01;
+                        p.x += Math.sin(p.angle) * 0.5;
+                        
+                        if (p.life > 0) {
+                            ctx.beginPath();
+                            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                            ctx.fillStyle = `rgba(183, 148, 246, ${p.life})`;
+                            ctx.fill();
+                            return true;
                         }
+                        return false;
+                    });
+
+                    requestAnimationFrame(animate);
+                };
+
+                animate();
+                return canvas;
+            };
+
+            // Countdown Timer
+            const initCountdown = () => {
+                const updateCountdown = () => {
+                    const now = new Date();
+                    const currentYear = now.getFullYear();
+                    let birthday = new Date(currentYear, 8, 27); // September 27
+                    
+                    if (now > birthday) {
+                        birthday = new Date(currentYear + 1, 8, 27);
                     }
                     
-                    // Update bar heights based on frequency data
-                    for (let i = 0; i < bars.length; i++) {
-                        const value = data[i * 4] || 0;
-                        bars[i].style.height = `${(value / 255) * 100}%`;
-                    }
-                }
-            }
-
-            // Living Constellation Creator
-            class ConstellationCreator {
-                constructor(canvas) {
-                    this.canvas = canvas;
-                    this.ctx = canvas.getContext('2d');
-                    this.points = [];
-                    this.connections = [];
-                    this.pulsePhase = 0;
-                }
-
-                addPoint(x, y) {
-                    const newPoint = { x, y, id: this.points.length };
+                    const diff = birthday - now;
                     
-                    // Auto-connect to nearby points (Delaunay-like)
-                    this.points.forEach(point => {
-                        const dist = Math.hypot(point.x - x, point.y - y);
-                        if (dist < 150 && dist > 20) {
-                            this.connections.push({
-                                from: point.id,
-                                to: newPoint.id,
-                                distance: dist
-                            });
-                        }
-                    });
+                    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
                     
-                    this.points.push(newPoint);
-                }
-
-                clear() {
-                    this.points = [];
-                    this.connections = [];
-                }
-
-                update(deltaTime) {
-                    this.pulsePhase += deltaTime * 0.002;
-                }
-
-                render() {
-                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                    const daysEl = document.getElementById('days');
+                    const hoursEl = document.getElementById('hours');
+                    const minutesEl = document.getElementById('minutes');
+                    const secondsEl = document.getElementById('seconds');
                     
-                    // Draw connections with energy pulse
-                    this.ctx.strokeStyle = 'rgba(183, 148, 246, 0.3)';
-                    this.ctx.lineWidth = 2;
-                    
-                    this.connections.forEach((conn, i) => {
-                        const from = this.points[conn.from];
-                        const to = this.points[conn.to];
-                        if (!from || !to) return;
-                        
-                        const pulse = Math.sin(this.pulsePhase + i * 0.2) * 0.5 + 0.5;
-                        this.ctx.globalAlpha = 0.3 + pulse * 0.4;
-                        
-                        this.ctx.beginPath();
-                        this.ctx.moveTo(from.x, from.y);
-                        this.ctx.lineTo(to.x, to.y);
-                        this.ctx.stroke();
-                        
-                        // Energy traveling along connection
-                        const t = (Math.sin(this.pulsePhase + i * 0.5) + 1) / 2;
-                        const energyX = from.x + (to.x - from.x) * t;
-                        const energyY = from.y + (to.y - from.y) * t;
-                        
-                        this.ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
-                        this.ctx.beginPath();
-                        this.ctx.arc(energyX, energyY, 2, 0, Math.PI * 2);
-                        this.ctx.fill();
-                    });
-                    
-                    // Draw stars with pulsing glow
-                    this.points.forEach((point, i) => {
-                        const pulse = Math.sin(this.pulsePhase + i * 0.3) * 0.5 + 0.5;
-                        
-                        // Glow
-                        const gradient = this.ctx.createRadialGradient(point.x, point.y, 0, point.x, point.y, 20);
-                        gradient.addColorStop(0, `rgba(183, 148, 246, ${0.8 + pulse * 0.2})`);
-                        gradient.addColorStop(1, 'transparent');
-                        
-                        this.ctx.fillStyle = gradient;
-                        this.ctx.fillRect(point.x - 20, point.y - 20, 40, 40);
-                        
-                        // Star core
-                        this.ctx.fillStyle = 'white';
-                        this.ctx.globalAlpha = 1;
-                        this.ctx.beginPath();
-                        this.ctx.arc(point.x, point.y, 3 + pulse, 0, Math.PI * 2);
-                        this.ctx.fill();
-                    });
-                    
-                    this.ctx.globalAlpha = 1;
-                }
-            }
-
-            // Generative Music System
-            class GenerativeMusic {
-                constructor() {
-                    this.synth = null;
-                    this.isInitialized = false;
-                    this.scale = ['C4', 'D4', 'E4', 'G4', 'A4', 'C5', 'D5', 'E5'];
-                }
-
-                init() {
-                    if (this.isInitialized) return;
-                    this.synth = new Tone.PolySynth(Tone.Synth).toDestination();
-                    this.synth.set({
-                        oscillator: { type: 'sine' },
-                        envelope: { attack: 0.5, decay: 0.2, sustain: 0.3, release: 1 }
-                    });
-                    this.isInitialized = true;
-                }
-
-                playNote(x, y) {
-                    if (!this.isInitialized) return;
-                    const noteIndex = Math.floor((x / window.innerWidth) * this.scale.length);
-                    const note = this.scale[noteIndex];
-                    const volume = -20 + (y / window.innerHeight) * 10;
-                    this.synth.volume.value = volume;
-                    this.synth.triggerAttackRelease(note, '8n');
-                }
-
-                playChord() {
-                    if (!this.isInitialized) return;
-                    const chord = ['C4', 'E4', 'G4', 'C5'];
-                    this.synth.triggerAttackRelease(chord, '2n');
-                }
-            }
-
-            // Main Application Controller
-            const init = () => {
-                // Initialize all systems
-                const particleSystem = new ParticleSystem();
-                const audioViz = new AudioVisualizer();
-                const generativeMusic = new GenerativeMusic();
+                    if (daysEl) daysEl.textContent = days;
+                    if (hoursEl) hoursEl.textContent = String(hours).padStart(2, '0');
+                    if (minutesEl) minutesEl.textContent = String(minutes).padStart(2, '0');
+                    if (secondsEl) secondsEl.textContent = String(seconds).padStart(2, '0');
+                };
                 
-                // Get DOM elements
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+            };
+
+            // Initialize Experience
+            const init = () => {
+                // Wait for DOM
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', init);
+                    return;
+                }
+
                 const entryOverlay = document.getElementById('entryOverlay');
                 const mainContainer = document.getElementById('mainContainer');
                 const enterBtn = document.getElementById('enterBtn');
                 const bgMusic = document.getElementById('bgMusic');
-                const musicToggle = document.getElementById('musicToggle');
-                const audioVisual = document.getElementById('audioVisual');
-                const letterSection = document.getElementById('letterSection');
-                const micBtn = document.getElementById('micBtn');
-                const clearBtn = document.getElementById('clearConstellation');
-                
-                // Canvas setup
+                const audioBars = document.querySelectorAll('.audio-bar');
                 const starCanvas = document.getElementById('starCanvas');
-                const auroraCanvas = document.getElementById('auroraCanvas');
-                const constellationCanvas = document.getElementById('constellationCanvas');
-                
-                const resizeCanvases = () => {
-                    [starCanvas, auroraCanvas, constellationCanvas].forEach(canvas => {
-                        canvas.width = window.innerWidth;
-                        canvas.height = window.innerHeight;
+                const wishBtn = document.getElementById('wishBtn');
+                const wishText = document.getElementById('wishText');
+                const letterSection = document.getElementById('letterSection');
+
+                // Enter button handler
+                if (enterBtn) {
+                    enterBtn.addEventListener('click', async () => {
+                        // Hide overlay
+                        entryOverlay.classList.add('hidden');
+                        
+                        // Show main content
+                        mainContainer.style.opacity = '1';
+                        
+                        // Show canvas
+                        starCanvas.classList.add('visible');
+                        
+                        // Play music
+                        try {
+                            await bgMusic.play();
+                            state.isPlaying = true;
+                            audioBars.forEach(bar => bar.classList.add('playing'));
+                        } catch (e) {
+                            console.log('Audio autoplay prevented');
+                        }
+                        
+                        // Initialize canvas
+                        initCanvas();
+                        
+                        // Start countdown
+                        initCountdown();
+                        
+                        // Animate sections
+                        setTimeout(() => {
+                            document.querySelectorAll('.feature-card').forEach((card, i) => {
+                                setTimeout(() => card.classList.add('visible'), i * 200);
+                            });
+                        }, 500);
+                        
+                        // Animate letter
+                        setTimeout(() => {
+                            letterSection.classList.add('visible');
+                        }, 1000);
                     });
-                };
-                
-                resizeCanvases();
-                window.addEventListener('resize', resizeCanvases);
-                
-                const starCtx = starCanvas.getContext('2d');
-                const auroraCtx = auroraCanvas.getContext('2d');
-                
-                const constellation = new ConstellationCreator(constellationCanvas);
-                
-                // Star field data
-                const stars = new Float32Array(300 * 5);
-                for (let i = 0; i < 300 * 5; i += 5) {
-                    stars[i] = Math.random();
-                    stars[i + 1] = Math.random();
-                    stars[i + 2] = Math.random() * 2 + 0.5;
-                    stars[i + 3] = Math.random() * 0.0005 + 0.0001;
-                    stars[i + 4] = Math.random() * Math.PI * 2;
                 }
-                
-                // Initialize event listeners (State Machine Pattern)
-                let appReady = false;
-                
-                // Enter button - state transition
-                enterBtn.addEventListener('click', async () => {
-                    if (currentState !== AppState.READY) return;
-                    
-                    currentState = AppState.ENTERING;
-                    entryOverlay.classList.add('hidden');
-                    mainContainer.style.opacity = '1';
-                    
-                    // Initialize audio
-                    await audioViz.init(bgMusic);
-                    generativeMusic.init();
-                    
-                    try {
-                        await bgMusic.play();
-                        store.setState(() => ({ isPlaying: true }));
-                    } catch (e) {
-                        console.log('Audio prevented');
-                    }
-                    
-                    currentState = AppState.ACTIVE;
-                    
-                    // Start animations
-                    setTimeout(() => {
-                        letterSection.classList.add('visible');
-                    }, 500);
-                });
-                
-                // Music toggle
-                musicToggle.addEventListener('click', () => {
-                    if (currentState !== AppState.ACTIVE) return;
-                    
-                    const isPlaying = store.getState().isPlaying;
-                    if (isPlaying) {
-                        bgMusic.pause();
-                    } else {
-                        bgMusic.play();
-                    }
-                    store.setState(() => ({ isPlaying: !isPlaying }));
-                });
-                
-                // Constellation interactions
-                constellationCanvas.addEventListener('click', (e) => {
-                    if (currentState !== AppState.ACTIVE) return;
-                    constellation.addPoint(e.clientX, e.clientY);
-                    generativeMusic.playNote(e.clientX, e.clientY);
-                });
-                
-                clearBtn.addEventListener('click', () => {
-                    constellation.clear();
-                });
-                
-                // Candle interactions
-                document.querySelectorAll('.flame').forEach((flame, i) => {
-                    flame.addEventListener('click', () => {
-                        flame.classList.add('extinguished');
-                        generativeMusic.playChord();
+
+                // Wish generator
+                if (wishBtn && wishText) {
+                    wishBtn.addEventListener('click', () => {
+                        const randomWish = wishes[Math.floor(Math.random() * wishes.length)];
+                        wishText.style.opacity = '0';
+                        setTimeout(() => {
+                            wishText.textContent = randomWish;
+                            wishText.style.opacity = '1';
+                        }, 300);
                     });
-                });
-                
-                // Microphone blow detection
-                micBtn.addEventListener('click', async () => {
-                    try {
-                        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                        const audioContext = new AudioContext();
-                        const source = audioContext.createMediaStreamSource(stream);
-                        const analyser = audioContext.createAnalyser();
-                        analyser.fftSize = 256;
-                        source.connect(analyser);
-                        
-                        const dataArray = new Uint8Array(analyser.frequencyBinCount);
-                        
-                        const checkBlow = () => {
-                            analyser.getByteFrequencyData(dataArray);
-                            const lowFreqSum = dataArray.slice(0, 10).reduce((a, b) => a + b, 0);
-                            
-                            if (lowFreqSum > 1000) {
-                                document.querySelectorAll('.flame').forEach(flame => {
-                                    flame.classList.add('extinguished');
-                                });
-                                generativeMusic.playChord();
-                            } else {
-                                requestAnimationFrame(checkBlow);
-                            }
-                        };
-                        
-                        checkBlow();
-                    } catch (e) {
-                        console.log('Mic access denied');
-                    }
-                });
-                
+                }
+
                 // Mouse tracking
                 document.addEventListener('mousemove', (e) => {
-                    store.setState(() => ({
-                        mouseX: e.clientX / window.innerWidth,
-                        mouseY: e.clientY / window.innerHeight
-                    }));
-                    
-                    document.documentElement.style.setProperty('--mouse-x', `${(e.clientX / window.innerWidth) * 100}%`);
-                    document.documentElement.style.setProperty('--mouse-y', `${(e.clientY / window.innerHeight) * 100}%`);
+                    state.mouseX = e.clientX / window.innerWidth;
+                    state.mouseY = e.clientY / window.innerHeight;
+                    document.documentElement.style.setProperty('--mouse-x', `${state.mouseX * 100}%`);
+                    document.documentElement.style.setProperty('--mouse-y', `${state.mouseY * 100}%`);
                 });
-                
+
                 // Click particles
                 document.addEventListener('click', (e) => {
                     if (e.target.tagName === 'BUTTON') return;
-                    if (currentState === AppState.ACTIVE) {
-                        particleSystem.spawn(e.clientX, e.clientY, 10);
+                    
+                    for (let i = 0; i < 5; i++) {
+                        state.particles.push({
+                            x: e.clientX,
+                            y: e.clientY,
+                            size: Math.random() * 3 + 1,
+                            speed: Math.random() * 2 + 1,
+                            life: 1,
+                            angle: Math.random() * Math.PI * 2
+                        });
                     }
                 });
-                
-                // Morphing text effect
-                const morphText = document.getElementById('morphText');
-                const messages = [
-                    'Happy Birthday',
-                    'Beautiful Soul',
-                    'Cosmic Wonder',
-                    'Infinite Joy',
-                    'Stellar Being'
-                ];
-                let messageIndex = 0;
-                
-                setInterval(() => {
-                    morphText.style.opacity = '0';
-                    setTimeout(() => {
-                        messageIndex = (messageIndex + 1) % messages.length;
-                        morphText.textContent = messages[messageIndex];
-                        morphText.style.opacity = '1';
-                    }, 500);
-                }, 3000);
-                
-                // Main render loop
-                let lastTime = 0;
-                let auroraTime = 0;
-                
-                const render = (currentTime) => {
-                    const deltaTime = currentTime - lastTime;
-                    lastTime = currentTime;
-                    auroraTime += deltaTime * 0.0001;
-                    
-                    const state = store.getState();
-                    
-                    // Clear canvases
-                    starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
-                    auroraCtx.clearRect(0, 0, auroraCanvas.width, auroraCanvas.height);
-                    
-                    // Render stars
-                    starCtx.fillStyle = 'white';
-                    for (let i = 0; i < 300 * 5; i += 5) {
-                        const x = stars[i] * starCanvas.width;
-                        const y = stars[i + 1] * starCanvas.height;
-                        const size = stars[i + 2];
-                        const phase = stars[i + 4] + currentTime * stars[i + 3];
-                        
-                        const brightness = Math.sin(phase) * 0.5 + 0.5;
-                        starCtx.globalAlpha = brightness * 0.8 + 0.2;
-                        
-                        starCtx.beginPath();
-                        starCtx.arc(x, y, size, 0, Math.PI * 2);
-                        starCtx.fill();
-                    }
-                    
-                    // Render aurora using Perlin noise
-                    for (let x = 0; x < auroraCanvas.width; x += 10) {
-                        for (let y = 0; y < auroraCanvas.height; y += 10) {
-                            const noise = perlin.noise(x * 0.005, y * 0.005, auroraTime);
-                            if (noise > 0.3) {
-                                const alpha = (noise - 0.3) * 2;
-                                auroraCtx.fillStyle = `hsla(${280 + noise * 60}, 70%, 50%, ${alpha * 0.3})`;
-                                auroraCtx.fillRect(x, y, 10, 10);
-                            }
-                        }
-                    }
-                    
-                    // Update and render particles
-                    particleSystem.update(deltaTime, state.mouseX * window.innerWidth, state.mouseY * window.innerHeight);
-                    particleSystem.render(starCtx);
-                    
-                    // Update constellation
-                    constellation.update(deltaTime);
-                    constellation.render();
-                    
-                    // Update audio visualization
-                    if (state.isPlaying) {
-                        audioViz.renderBars(audioVisual);
-                    }
-                    
-                    requestAnimationFrame(render);
-                };
-                
-                // Start when ready
-                currentState = AppState.READY;
-                requestAnimationFrame(render);
             };
-            
-            // Initialize when DOM is ready
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', init);
-            } else {
-                init();
-            }
-            
+
             return { init };
         })();
+
+        // Initialize when ready
+        CosmicBirthday.init();
     </script>
 </body>
 </html>
