@@ -91,7 +91,7 @@
             z-index: 1;
         }
 
-        /* Audio Visualizer - CSS Only */
+        /* Audio Visualizer - REAL */
         .audio-viz {
             display: flex;
             justify-content: center;
@@ -105,24 +105,33 @@
             width: 4px;
             background: linear-gradient(to top, var(--cosmic-accent), var(--cosmic-glow));
             border-radius: 2px;
-            animation: pulse 1s ease-in-out infinite;
+            transition: height 0.15s ease-out;
+            height: 10%;
         }
 
-        .viz-bar:nth-child(1) { animation-delay: 0s; height: 40%; }
-        .viz-bar:nth-child(2) { animation-delay: 0.1s; height: 60%; }
-        .viz-bar:nth-child(3) { animation-delay: 0.2s; height: 45%; }
-        .viz-bar:nth-child(4) { animation-delay: 0.3s; height: 70%; }
-        .viz-bar:nth-child(5) { animation-delay: 0.4s; height: 50%; }
-        .viz-bar:nth-child(6) { animation-delay: 0.5s; height: 65%; }
-        .viz-bar:nth-child(7) { animation-delay: 0.6s; height: 35%; }
-
-        @keyframes pulse {
-            0%, 100% { transform: scaleY(0.5); opacity: 0.5; }
-            50% { transform: scaleY(1); opacity: 1; }
+        /* Static animation when not playing */
+        .audio-viz:not(.playing) .viz-bar {
+            animation: gentle-pulse 2s ease-in-out infinite;
+            opacity: 0.3;
         }
 
+        .audio-viz:not(.playing) .viz-bar:nth-child(1) { animation-delay: 0s; }
+        .audio-viz:not(.playing) .viz-bar:nth-child(2) { animation-delay: 0.1s; }
+        .audio-viz:not(.playing) .viz-bar:nth-child(3) { animation-delay: 0.2s; }
+        .audio-viz:not(.playing) .viz-bar:nth-child(4) { animation-delay: 0.3s; }
+        .audio-viz:not(.playing) .viz-bar:nth-child(5) { animation-delay: 0.4s; }
+        .audio-viz:not(.playing) .viz-bar:nth-child(6) { animation-delay: 0.5s; }
+        .audio-viz:not(.playing) .viz-bar:nth-child(7) { animation-delay: 0.6s; }
+
+        @keyframes gentle-pulse {
+            0%, 100% { height: 10%; }
+            50% { height: 30%; }
+        }
+
+        /* When playing, no CSS animation - JS controls it */
         .audio-viz.playing .viz-bar {
-            animation-duration: 0.8s;
+            animation: none;
+            opacity: 1;
         }
 
         /* Interactive Button Styles */
@@ -139,6 +148,8 @@
             transition: all 0.3s ease;
             box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
             overflow: hidden;
+            border: none;
+            cursor: pointer;
         }
 
         .magic-button:hover {
@@ -268,6 +279,22 @@
             margin-top: 0.25rem;
         }
 
+        /* Music Status */
+        .music-status {
+            text-align: center;
+            padding: 0.5rem;
+            background: rgba(183, 148, 246, 0.1);
+            border-radius: 10px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .music-status.playing {
+            background: rgba(102, 234, 126, 0.1);
+            color: #66ea7e;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .game-portal {
@@ -280,12 +307,6 @@
                 justify-content: center;
                 width: 100%;
             }
-        }
-
-        /* Loading state */
-        .loading {
-            opacity: 0.5;
-            pointer-events: none;
         }
 
         /* Success message */
@@ -334,7 +355,7 @@
             <button id="enterBtn" class="magic-button">
                 Enter the Experience ✨
             </button>
-            <p class="text-sm mt-6 opacity-60">Turn on sound for the best experience</p>
+            <p class="text-sm mt-6 opacity-60">Click to enter and start the birthday music</p>
         </div>
     </div>
 
@@ -353,7 +374,7 @@
                 🎯 Make a Wish & Play
             </a>
             <button id="musicBtn" class="magic-button">
-                🎵 Play Birthday Music
+                🎵 Toggle Birthday Music
             </button>
         </div>
 
@@ -369,14 +390,20 @@
                 <div class="viz-bar"></div>
                 <div class="viz-bar"></div>
             </div>
+            <!-- LOCAL MUSIC FIRST! -->
             <audio id="bgMusic" loop preload="auto">
                 <source src="Pisces - Tony Ann (Piano Cover).mp3" type="audio/mpeg">
+                <!-- Fallback if local file doesn't exist -->
                 <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+                Your browser doesn't support audio
             </audio>
             <div class="text-center mt-4">
                 <button id="playPauseBtn" class="px-6 py-2 bg-purple-600/30 rounded-lg hover:bg-purple-600/50 transition-colors">
                     Play / Pause
                 </button>
+            </div>
+            <div class="music-status" id="musicStatus">
+                🎵 Music Ready - Click play to start
             </div>
         </section>
 
@@ -471,13 +498,67 @@
             // State
             isPlaying: false,
             stars: [],
+            audioContext: null,
+            analyser: null,
+            dataArray: null,
             
             // Initialize
             init() {
                 this.setupCanvas();
+                this.setupAudio();
                 this.bindEvents();
                 this.startCountdown();
                 this.generateWishes();
+            },
+            
+            // Audio setup for real visualizer
+            setupAudio() {
+                const audio = document.getElementById('bgMusic');
+                
+                // Create audio context on user interaction
+                const initAudioContext = () => {
+                    if (!this.audioContext) {
+                        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const source = this.audioContext.createMediaElementSource(audio);
+                        this.analyser = this.audioContext.createAnalyser();
+                        this.analyser.fftSize = 64;
+                        
+                        source.connect(this.analyser);
+                        this.analyser.connect(this.audioContext.destination);
+                        
+                        this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+                    }
+                };
+                
+                // Store for later use
+                this.initAudioContext = initAudioContext;
+            },
+            
+            // Visualizer animation
+            animateVisualizer() {
+                if (!this.isPlaying) return;
+                
+                const bars = document.querySelectorAll('.viz-bar');
+                
+                if (this.analyser && this.dataArray) {
+                    this.analyser.getByteFrequencyData(this.dataArray);
+                    
+                    // Map frequency data to bars
+                    bars.forEach((bar, i) => {
+                        const value = this.dataArray[i * 2] || 0;
+                        const height = Math.max(10, (value / 255) * 100);
+                        bar.style.height = `${height}%`;
+                    });
+                } else {
+                    // Fallback animation if audio context fails
+                    const time = Date.now() * 0.001;
+                    bars.forEach((bar, i) => {
+                        const height = 30 + Math.sin(time * 2 + i * 0.5) * 20;
+                        bar.style.height = `${height}%`;
+                    });
+                }
+                
+                requestAnimationFrame(() => this.animateVisualizer());
             },
             
             // Canvas setup - simplified for reliability
@@ -501,7 +582,8 @@
                         x: Math.random() * canvas.width,
                         y: Math.random() * canvas.height,
                         size: Math.random() * 2 + 0.5,
-                        speed: Math.random() * 0.5 + 0.1
+                        speed: Math.random() * 0.5 + 0.1,
+                        brightness: Math.random()
                     });
                 }
                 
@@ -512,7 +594,11 @@
                     // Draw stars
                     ctx.fillStyle = 'white';
                     this.stars.forEach(star => {
-                        ctx.globalAlpha = Math.random() * 0.5 + 0.5;
+                        // Twinkling effect
+                        star.brightness += (Math.random() - 0.5) * 0.1;
+                        star.brightness = Math.max(0.3, Math.min(1, star.brightness));
+                        
+                        ctx.globalAlpha = star.brightness;
                         ctx.beginPath();
                         ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
                         ctx.fill();
@@ -524,6 +610,7 @@
                             star.x = Math.random() * canvas.width;
                         }
                     });
+                    ctx.globalAlpha = 1;
                     
                     requestAnimationFrame(animate);
                 };
@@ -541,64 +628,88 @@
                 const generateBtn = document.getElementById('generateBtn');
                 const shareBtn = document.getElementById('shareBtn');
                 const audioViz = document.getElementById('audioViz');
+                const musicStatus = document.getElementById('musicStatus');
                 
-                // Enter button
-                enterBtn.addEventListener('click', () => {
+                // Enter button - AUTOMATICALLY PLAY MUSIC
+                enterBtn.addEventListener('click', async () => {
                     portal.classList.add('hidden');
                     mainContent.style.opacity = '1';
+                    
+                    // Initialize audio context on user gesture
+                    this.initAudioContext();
+                    
+                    // Try to play music automatically
+                    try {
+                        bgMusic.volume = 0.5;
+                        await bgMusic.play();
+                        this.isPlaying = true;
+                        audioViz.classList.add('playing');
+                        musicStatus.textContent = '🎵 Music playing - Happy Birthday!';
+                        musicStatus.classList.add('playing');
+                        this.animateVisualizer();
+                        this.showSuccess('Welcome! Music is playing 🎵');
+                    } catch (error) {
+                        console.log('Autoplay prevented:', error);
+                        this.showSuccess('Welcome! Click the music button to start the birthday song 🎵');
+                        musicStatus.textContent = '⏸️ Music paused - Click play to start';
+                    }
                     
                     // Show letter with delay
                     setTimeout(() => {
                         document.getElementById('letterContent').classList.add('visible');
                     }, 500);
-                    
-                    this.showSuccess('Welcome to your special day! 🎉');
                 });
                 
-                // Music controls - more reliable
-                const playMusic = async () => {
-                    try {
-                        // Set volume
-                        bgMusic.volume = 0.5;
-                        
-                        // Try to play
-                        await bgMusic.play();
-                        this.isPlaying = true;
-                        audioViz.classList.add('playing');
-                        this.showSuccess('Music playing! 🎵');
-                    } catch (e) {
-                        console.log('Music play failed:', e);
-                        this.showSuccess('Click play button to start music');
+                // Music controls
+                const toggleMusic = async () => {
+                    if (this.isPlaying) {
+                        bgMusic.pause();
+                        this.isPlaying = false;
+                        audioViz.classList.remove('playing');
+                        musicStatus.textContent = '⏸️ Music paused';
+                        musicStatus.classList.remove('playing');
+                    } else {
+                        try {
+                            // Initialize audio context if not done
+                            this.initAudioContext();
+                            
+                            bgMusic.volume = 0.5;
+                            await bgMusic.play();
+                            this.isPlaying = true;
+                            audioViz.classList.add('playing');
+                            musicStatus.textContent = '🎵 Music playing - Happy Birthday!';
+                            musicStatus.classList.add('playing');
+                            this.animateVisualizer();
+                            this.showSuccess('Music playing! 🎵');
+                        } catch (error) {
+                            console.error('Play failed:', error);
+                            this.showSuccess('Unable to play music. Please check your browser settings.');
+                        }
                     }
-                };
-                
-                const pauseMusic = () => {
-                    bgMusic.pause();
-                    this.isPlaying = false;
-                    audioViz.classList.remove('playing');
                 };
                 
                 // Music button handlers
-                musicBtn.addEventListener('click', playMusic);
+                musicBtn.addEventListener('click', toggleMusic);
+                playPauseBtn.addEventListener('click', toggleMusic);
                 
-                playPauseBtn.addEventListener('click', () => {
-                    if (this.isPlaying) {
-                        pauseMusic();
-                    } else {
-                        playMusic();
-                    }
+                // Handle music ended
+                bgMusic.addEventListener('ended', () => {
+                    // Loop should handle this, but just in case
+                    bgMusic.play();
                 });
                 
                 // Generate wish
                 generateBtn.addEventListener('click', () => {
                     const messages = [
-                        "May your dreams be as limitless as the stars",
-                        "Another year of making the world brighter",
-                        "You're proof that magic exists",
-                        "Today the universe celebrates you",
-                        "Your light guides us all",
-                        "Pure magic in human form",
-                        "A year older, infinitely more amazing"
+                        "May your dreams be as limitless as the stars ✨",
+                        "Another year of making the world brighter 🌟",
+                        "You're proof that magic exists in this universe 💫",
+                        "Today the cosmos celebrates your existence 🌌",
+                        "Your light guides us through the darkness 🌠",
+                        "Pure magic in human form, that's you 🎆",
+                        "A year older, infinitely more amazing 🎉",
+                        "The universe smiled the day you were born 🌈",
+                        "Your kindness creates ripples across galaxies 💝"
                     ];
                     
                     const message = messages[Math.floor(Math.random() * messages.length)];
@@ -613,11 +724,22 @@
                             title: 'Birthday Wishes for Ela',
                             text: 'Celebrating an amazing person today!',
                             url: window.location.href
-                        });
+                        }).catch(err => console.log('Share cancelled'));
                     } else {
                         // Fallback - copy to clipboard
-                        navigator.clipboard.writeText(window.location.href);
-                        this.showSuccess('Link copied to clipboard! 📋');
+                        const text = `Check out this birthday celebration for Ela! ${window.location.href}`;
+                        navigator.clipboard.writeText(text).then(() => {
+                            this.showSuccess('Link copied to clipboard! 📋');
+                        });
+                    }
+                });
+                
+                // Handle page visibility change (pause music when tab is hidden)
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden && this.isPlaying) {
+                        bgMusic.pause();
+                    } else if (!document.hidden && this.isPlaying) {
+                        bgMusic.play();
                     }
                 });
             },
@@ -627,7 +749,7 @@
                 const updateCountdown = () => {
                     const now = new Date();
                     const currentYear = now.getFullYear();
-                    const birthday = new Date(currentYear, 8, 15); // September 15
+                    let birthday = new Date(currentYear, 8, 15); // September 15
                     
                     // If birthday passed this year, set to next year
                     if (now > birthday) {
@@ -654,13 +776,14 @@
             // Dynamic wishes
             generateWishes() {
                 const wishes = [
-                    "Every star tonight shines for you 🌟",
-                    "Your smile lights up the universe 💫",
-                    "Another year of pure magic ✨",
+                    "Every star tonight shines for you, Ela 🌟",
+                    "Your smile lights up the entire universe 💫",
+                    "Another year of pure magic and wonder ✨",
                     "You make the world better just by being you 💝",
-                    "Celebrating the miracle that is you 🎉",
+                    "Celebrating the miracle that is you today 🎉",
                     "Your kindness ripples through the cosmos 🌌",
-                    "Today we celebrate your light 🌠"
+                    "Today we celebrate your beautiful light 🌠",
+                    "The universe is brighter with you in it 🌈"
                 ];
                 
                 let index = 0;
