@@ -1,1289 +1,697 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ela's Celestial Birthday - A Love Letter Written in Stars</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;1,400&family=Inter:wght@300;400;600&display=swap');
+<!DOCTYPE html><html lang="en"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0"> <title>Ela's Celestial Birthday - A Love Letter Written in Stars</title> <script src="https://cdn.tailwindcss.com"></script> <style> @import url('https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;1,400&family=Inter:wght@300;400;600&display=swap');
+text
 
-        :root {
-            --cosmic-primary: #000428;
-            --cosmic-secondary: #004e92;
-            --cosmic-accent: #b794f6;
-            --cosmic-glow: #9f7aea;
-            --cosmic-text: #f0e6ff;
-        }
+    :root {
+        --cosmic-primary: #000428;
+        --cosmic-secondary: #004e92;
+        --cosmic-accent: #b794f6;
+        --cosmic-glow: #9f7aea;
+        --cosmic-text: #f0e6ff;
+        --mouse-x: 50%;
+        --mouse-y: 50%;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
 
-        body {
-            background: linear-gradient(180deg, var(--cosmic-primary) 0%, var(--cosmic-secondary) 100%);
-            font-family: 'Crimson Pro', serif;
-            color: var(--cosmic-text);
-            overflow-x: hidden;
-            min-height: 100vh;
-        }
+    body {
+        background: linear-gradient(180deg, var(--cosmic-primary) 0%, var(--cosmic-secondary) 100%);
+        font-family: 'Crimson Pro', serif;
+        color: var(--cosmic-text);
+        overflow-x: hidden;
+        min-height: 100vh;
+    }
 
-        /* Typography */
-        h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
-        h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); }
-        p { font-size: clamp(1.1rem, 2vw, 1.25rem); }
+    /* Simplified Typography */
+    h1 { font-size: clamp(2.5rem, 5vw, 4rem); }
+    h2 { font-size: clamp(1.8rem, 4vw, 2.5rem); }
+    p { font-size: clamp(1.1rem, 2vw, 1.25rem); }
 
-        /* Portal */
-        .portal-overlay {
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(ellipse at center, #1b2735 0%, #090a0f 100%);
-            z-index: 9999;
-            display: grid;
-            place-items: center;
-            transition: opacity 1s ease-out, transform 1s ease-out;
-        }
+    /* Entry Portal - Simplified */
+    .portal-overlay {
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(ellipse at center, #1b2735 0%, #090a0f 100%);
+        z-index: 9999;
+        display: grid;
+        place-items: center;
+        transition: opacity 1s ease-out;
+    }
 
-        .portal-overlay.hidden {
-            opacity: 0;
-            transform: scale(1.1);
-            pointer-events: none;
-        }
+    .portal-overlay.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
 
-        /* Cosmic Shimmer */
-        .cosmic-shimmer {
-            background: linear-gradient(90deg, var(--cosmic-text), var(--cosmic-accent), var(--cosmic-text));
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmer 3s linear infinite;
-            filter: drop-shadow(0 0 20px rgba(183, 148, 246, 0.3));
-            will-change: background-position;
-        }
+    /* Cosmic Shimmer - Simplified */
+    .cosmic-shimmer {
+        background: linear-gradient(90deg, var(--cosmic-text), var(--cosmic-accent), var(--cosmic-text));
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: shimmer 3s linear infinite;
+        filter: drop-shadow(0 0 20px rgba(183, 148, 246, 0.3));
+    }
 
-        @keyframes shimmer {
-            to { background-position: 200% center; }
-        }
+    @keyframes shimmer {
+        to { background-position: 200% center; }
+    }
 
-        /* Glass Card with Hover */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform;
-        }
+    /* Glass Card - Simplified */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
 
-        .glass-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(183, 148, 246, 0.3);
-            box-shadow: 0 20px 60px rgba(183, 148, 246, 0.2);
-        }
+    /* Single Canvas for better performance */
+    #starCanvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+    }
 
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(183, 148, 246, 0.1) 0%, transparent 70%);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
+    /* Audio Visualizer - REAL */
+    .audio-viz {
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        gap: 4px;
+        height: 50px;
+        margin: 1.5rem 0;
+    }
 
-        .glass-card:hover::before {
-            opacity: 1;
-        }
+    .viz-bar {
+        width: 4px;
+        background: linear-gradient(to top, var(--cosmic-accent), var(--cosmic-glow));
+        border-radius: 2px;
+        transition: height 0.15s ease-out;
+        height: 10%;
+    }
 
-        /* Optimized Canvas */
-        #starCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            will-change: transform;
-        }
+    /* Static animation when not playing */
+    .audio-viz:not(.playing) .viz-bar {
+        animation: gentle-pulse 2s ease-in-out infinite;
+        opacity: 0.3;
+    }
 
-        /* Interactive Stars */
-        #interactiveCanvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            pointer-events: auto;
-            cursor: crosshair;
-        }
+    .audio-viz:not(.playing) .viz-bar:nth-child(1) { animation-delay: 0s; }
+    .audio-viz:not(.playing) .viz-bar:nth-child(2) { animation-delay: 0.1s; }
+    .audio-viz:not(.playing) .viz-bar:nth-child(3) { animation-delay: 0.2s; }
+    .audio-viz:not(.playing) .viz-bar:nth-child(4) { animation-delay: 0.3s; }
+    .audio-viz:not(.playing) .viz-bar:nth-child(5) { animation-delay: 0.4s; }
+    .audio-viz:not(.playing) .viz-bar:nth-child(6) { animation-delay: 0.5s; }
+    .audio-viz:not(.playing) .viz-bar:nth-child(7) { animation-delay: 0.6s; }
 
-        /* Audio Visualizer - REAL */
-        .audio-viz {
-            display: flex;
-            justify-content: center;
-            align-items: flex-end;
-            gap: 4px;
-            height: 60px;
-            margin: 1.5rem 0;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 10px;
-        }
+    @keyframes gentle-pulse {
+        0%, 100% { height: 10%; }
+        50% { height: 30%; }
+    }
 
-        .viz-bar {
-            width: 6px;
-            background: linear-gradient(to top, var(--cosmic-accent), var(--cosmic-glow), #fff);
-            border-radius: 3px;
-            transition: height 0.1s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 10%;
-            box-shadow: 0 0 10px var(--cosmic-accent);
-            will-change: height;
-        }
+    /* When playing, no CSS animation - JS controls it */
+    .audio-viz.playing .viz-bar {
+        animation: none;
+        opacity: 1;
+    }
 
-        .audio-viz:not(.playing) .viz-bar {
-            animation: gentle-pulse 2s ease-in-out infinite;
-            opacity: 0.3;
-        }
+    /* Interactive Button Styles */
+    .magic-button {
+        position: relative;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 50px;
+        font-size: 1.2rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        overflow: hidden;
+        border: none;
+        cursor: pointer;
+    }
 
-        .audio-viz:not(.playing) .viz-bar:nth-child(1) { animation-delay: 0s; }
-        .audio-viz:not(.playing) .viz-bar:nth-child(2) { animation-delay: 0.1s; }
-        .audio-viz:not(.playing) .viz-bar:nth-child(3) { animation-delay: 0.2s; }
-        .audio-viz:not(.playing) .viz-bar:nth-child(4) { animation-delay: 0.3s; }
-        .audio-viz:not(.playing) .viz-bar:nth-child(5) { animation-delay: 0.4s; }
-        .audio-viz:not(.playing) .viz-bar:nth-child(6) { animation-delay: 0.5s; }
-        .audio-viz:not(.playing) .viz-bar:nth-child(7) { animation-delay: 0.6s; }
-        .audio-viz:not(.playing) .viz-bar:nth-child(8) { animation-delay: 0.7s; }
-        .audio-viz:not(.playing) .viz-bar:nth-child(9) { animation-delay: 0.8s; }
-        .audio-viz:not(.playing) .viz-bar:nth-child(10) { animation-delay: 0.9s; }
+    .magic-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+    }
 
-        @keyframes gentle-pulse {
-            0%, 100% { height: 10%; }
-            50% { height: 30%; }
-        }
+    .magic-button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+        transition: left 0.5s;
+    }
 
-        .audio-viz.playing .viz-bar {
-            animation: none;
-            opacity: 1;
-        }
+    .magic-button:hover::before {
+        left: 100%;
+    }
 
-        /* Interactive Button */
-        .magic-button {
-            position: relative;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-block;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-            overflow: hidden;
-            border: none;
-            cursor: pointer;
-            will-change: transform;
-        }
+    /* Game Button Special */
+    .game-portal {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 1000;
+        animation: float 3s ease-in-out infinite;
+    }
 
-        .magic-button:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
-        }
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+    }
 
-        .magic-button:active {
-            transform: translateY(-1px) scale(1.02);
-        }
+    .game-portal-button {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        padding: 1.2rem 2.5rem;
+        border-radius: 50px;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 10px 40px rgba(245, 87, 108, 0.4);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
 
-        .magic-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            transition: left 0.5s;
-        }
+    .game-portal-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 50px rgba(245, 87, 108, 0.6);
+    }
 
-        .magic-button:hover::before {
-            left: 100%;
-        }
+    .sparkle {
+        animation: sparkle 2s linear infinite;
+    }
 
-        /* Game Portal */
+    @keyframes sparkle {
+        0%, 100% { opacity: 0; transform: scale(0); }
+        50% { opacity: 1; transform: scale(1); }
+    }
+
+    /* Letter Animation - Simplified */
+    .letter-content p {
+        line-height: 1.9;
+        margin-bottom: 1.5rem;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease;
+    }
+
+    .letter-content.visible p {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .letter-content.visible p:nth-child(1) { transition-delay: 0.1s; }
+    .letter-content.visible p:nth-child(2) { transition-delay: 0.2s; }
+    .letter-content.visible p:nth-child(3) { transition-delay: 0.3s; }
+    .letter-content.visible p:nth-child(4) { transition-delay: 0.4s; }
+    .letter-content.visible p:nth-child(5) { transition-delay: 0.5s; }
+    .letter-content.visible p:nth-child(6) { transition-delay: 0.6s; }
+    .letter-content.visible p:nth-child(7) { transition-delay: 0.7s; }
+
+    /* Birthday Card */
+    .birthday-card {
+        background: linear-gradient(135deg, rgba(183, 148, 246, 0.1), rgba(159, 122, 234, 0.1));
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .birthday-card::before {
+        content: '✨';
+        position: absolute;
+        font-size: 100px;
+        opacity: 0.1;
+        top: -20px;
+        right: -20px;
+        animation: float 4s ease-in-out infinite;
+    }
+
+    /* Countdown */
+    .countdown-item {
+        text-align: center;
+    }
+
+    .countdown-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .countdown-label {
+        font-size: 0.9rem;
+        opacity: 0.7;
+        margin-top: 0.25rem;
+    }
+
+    /* Music Status */
+    .music-status {
+        text-align: center;
+        padding: 0.5rem;
+        background: rgba(183, 148, 246, 0.1);
+        border-radius: 10px;
+        margin-top: 1rem;
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    .music-status.playing {
+        background: rgba(102, 234, 126, 0.1);
+        color: #66ea7e;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
         .game-portal {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            z-index: 1000;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-10px) rotate(2deg); }
-        }
-
-        .game-portal-button {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            padding: 1.2rem 2.5rem;
-            border-radius: 50px;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 10px 40px rgba(245, 87, 108, 0.4);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .game-portal-button:hover {
-            transform: scale(1.08);
-            box-shadow: 0 15px 50px rgba(245, 87, 108, 0.6);
-        }
-
-        .sparkle {
-            animation: sparkle 2s linear infinite;
-        }
-
-        @keyframes sparkle {
-            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
-            50% { opacity: 1; transform: scale(1) rotate(180deg); }
-        }
-
-        /* Letter Animation */
-        .letter-content p {
-            line-height: 1.9;
-            margin-bottom: 1.5rem;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .letter-content.visible p {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .letter-content.visible p:nth-child(1) { transition-delay: 0.1s; }
-        .letter-content.visible p:nth-child(2) { transition-delay: 0.2s; }
-        .letter-content.visible p:nth-child(3) { transition-delay: 0.3s; }
-        .letter-content.visible p:nth-child(4) { transition-delay: 0.4s; }
-        .letter-content.visible p:nth-child(5) { transition-delay: 0.5s; }
-        .letter-content.visible p:nth-child(6) { transition-delay: 0.6s; }
-        .letter-content.visible p:nth-child(7) { transition-delay: 0.7s; }
-
-        /* Interactive Hover Effect */
-        .letter-content p:hover {
-            color: var(--cosmic-accent);
-            transform: translateX(10px);
-            transition: all 0.3s ease;
-        }
-
-        /* Birthday Card */
-        .birthday-card {
-            background: linear-gradient(135deg, rgba(183, 148, 246, 0.1), rgba(159, 122, 234, 0.1));
-            border-radius: 20px;
-            padding: 3rem;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .birthday-card:hover {
-            background: linear-gradient(135deg, rgba(183, 148, 246, 0.15), rgba(159, 122, 234, 0.15));
-        }
-
-        .birthday-card::before {
-            content: '✨';
-            position: absolute;
-            font-size: 100px;
-            opacity: 0.1;
-            top: -20px;
-            right: -20px;
-            animation: float 4s ease-in-out infinite;
-            will-change: transform;
-        }
-
-        /* Countdown */
-        .countdown-item {
-            text-align: center;
-            transition: transform 0.3s ease;
-        }
-
-        .countdown-item:hover {
-            transform: scale(1.1);
-        }
-
-        .countdown-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            transition: all 0.3s ease;
-        }
-
-        .countdown-item:hover .countdown-number {
-            transform: scale(1.2);
-        }
-
-        .countdown-label {
-            font-size: 0.9rem;
-            opacity: 0.7;
-            margin-top: 0.25rem;
-        }
-
-        /* Music Status */
-        .music-status {
-            text-align: center;
-            padding: 0.5rem;
-            background: rgba(183, 148, 246, 0.1);
-            border-radius: 10px;
-            margin-top: 1rem;
-            font-size: 0.9rem;
-            opacity: 0.8;
-            transition: all 0.3s ease;
-        }
-
-        .music-status.playing {
-            background: rgba(102, 234, 126, 0.2);
-            color: #66ea7e;
-            animation: pulse-glow 2s ease-in-out infinite;
-        }
-
-        @keyframes pulse-glow {
-            0%, 100% { box-shadow: 0 0 10px rgba(102, 234, 126, 0.3); }
-            50% { box-shadow: 0 0 20px rgba(102, 234, 126, 0.6); }
-        }
-
-        /* Success Message */
-        .success-message {
-            position: fixed;
-            top: 20px;
+            bottom: 20px;
             right: 20px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 10px;
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10000;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+            left: 20px;
         }
-
-        .success-message.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* Parallax Layers */
-        .parallax-layer {
-            transition: transform 0.1s ease-out;
-            will-change: transform;
-        }
-
-        /* Particle Effect */
-        .particle {
-            position: fixed;
-            pointer-events: none;
-            animation: particle-float 3s ease-out forwards;
-        }
-
-        @keyframes particle-float {
-            0% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-100px) scale(0);
-            }
-        }
-
-        /* Interactive Click Effect */
-        .click-ripple {
-            position: fixed;
-            border-radius: 50%;
-            border: 2px solid var(--cosmic-accent);
-            animation: ripple 0.6s ease-out forwards;
-            pointer-events: none;
-        }
-
-        @keyframes ripple {
-            0% {
-                width: 0;
-                height: 0;
-                opacity: 1;
-            }
-            100% {
-                width: 100px;
-                height: 100px;
-                opacity: 0;
-            }
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .game-portal {
-                bottom: 20px;
-                right: 20px;
-                left: 20px;
-            }
-            
-            .game-portal-button {
-                justify-content: center;
-                width: 100%;
-            }
-        }
-
-        /* Loading State */
-        .loading {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-
-        /* Performance optimizations */
-        .gpu-accelerated {
-            transform: translateZ(0);
-            backface-visibility: hidden;
-            perspective: 1000px;
-        }
-    </style>
-</head>
-<body>
-    <!-- Dual Canvas System for Performance -->
-    <canvas id="starCanvas" class="gpu-accelerated" aria-hidden="true"></canvas>
-    <canvas id="interactiveCanvas" class="gpu-accelerated"></canvas>
-
-    <!-- Success Message -->
-    <div id="successMessage" class="success-message">
-        <span id="successText">✨ Magic Happening!</span>
-    </div>
-
-    <!-- Game Portal Button -->
-    <div class="game-portal">
-        <a href="index2.html" class="game-portal-button gpu-accelerated">
-            <span>🎮 Play Birthday Game!</span>
-            <span class="sparkle">✨</span>
-        </a>
-    </div>
-
-    <!-- Entry Portal -->
-    <div class="portal-overlay" id="portal">
-        <div class="text-center p-8 max-w-2xl">
-            <h1 class="cosmic-shimmer mb-6">A Celestial Birthday Journey</h1>
-            <p class="text-xl mb-8 opacity-80">For Ela, on her special day</p>
-            <button id="enterBtn" class="magic-button">
-                Enter the Experience ✨
-            </button>
-            <p class="text-sm mt-6 opacity-60">Click to enter • Music will play automatically</p>
-        </div>
-    </div>
-
-    <!-- Main Content -->
-    <main class="relative z-10 container mx-auto px-4 py-12 opacity-0 transition-opacity duration-1000" id="mainContent">
         
-        <!-- Header -->
-        <header class="text-center mb-12 parallax-layer">
-            <h1 class="cosmic-shimmer mb-4">Happy Birthday, Ela</h1>
-            <p class="text-xl opacity-90">Today we celebrate the light you bring to this universe</p>
-        </header>
+        .game-portal-button {
+            justify-content: center;
+            width: 100%;
+        }
+    }
 
-        <!-- Quick Actions -->
-        <div class="flex flex-wrap justify-center gap-4 mb-12 parallax-layer">
-            <a href="index2.html" class="magic-button">
-                🎯 Make a Wish & Play
-            </a>
-            <button id="musicBtn" class="magic-button">
-                🎵 Toggle Birthday Music
+    /* Success message */
+    .success-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 10px;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: all 0.3s ease;
+        z-index: 10000;
+    }
+
+    .success-message.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+</style>
+</head> <body> <!-- Single Canvas for Performance --> <canvas id="starCanvas" aria-hidden="true"></canvas>
+text
+
+<!-- Success Message -->
+<div id="successMessage" class="success-message">
+    <span id="successText">✨ Magic Happening!</span>
+</div>
+
+<!-- Game Portal Button - Always Visible -->
+<div class="game-portal">
+    <a href="index2.html" class="game-portal-button">
+        <span>🎮 Play Birthday Game!</span>
+        <span class="sparkle">✨</span>
+    </a>
+</div>
+
+<!-- Entry Portal -->
+<div class="portal-overlay" id="portal">
+    <div class="text-center p-8 max-w-2xl">
+        <h1 class="cosmic-shimmer mb-6">A Celestial Birthday Journey</h1>
+        <p class="text-xl mb-8 opacity-80">For Ela, on her special day</p>
+        <button id="enterBtn" class="magic-button">
+            Enter the Experience ✨
+        </button>
+        <p class="text-sm mt-6 opacity-60">Click to enter and start the birthday music</p>
+    </div>
+</div>
+
+<!-- Main Content -->
+<main class="relative z-10 container mx-auto px-4 py-12 opacity-0 transition-opacity duration-1000" id="mainContent">
+    
+    <!-- Header -->
+    <header class="text-center mb-12">
+        <h1 class="cosmic-shimmer mb-4">Happy Birthday, Ela</h1>
+        <p class="text-xl opacity-90">Today we celebrate the light you bring to this universe</p>
+    </header>
+
+    <!-- Quick Actions -->
+    <div class="flex flex-wrap justify-center gap-4 mb-12">
+        <a href="index2.html" class="magic-button">
+            🎯 Make a Wish & Play
+        </a>
+        <button id="musicBtn" class="magic-button">
+            🎵 Toggle Birthday Music
+        </button>
+    </div>
+
+    <!-- Audio Player -->
+    <section class="max-w-md mx-auto mb-12 glass-card">
+        <h2 class="text-center text-xl mb-4 text-purple-300">♪ Your Birthday Melody ♪</h2>
+        <div class="audio-viz" id="audioViz">
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+        </div>
+        <!-- LOCAL MUSIC FIRST! -->
+        <audio id="bgMusic" loop preload="auto">
+            <source src="Pisces - Tony Ann (Piano Cover).mp3" type="audio/mpeg">
+            <!-- Fallback if local file doesn't exist -->
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+            Your browser doesn't support audio
+        </audio>
+        <div class="text-center mt-4">
+            <button id="playPauseBtn" class="px-6 py-2 bg-purple-600/30 rounded-lg hover:bg-purple-600/50 transition-colors">
+                Play / Pause
             </button>
         </div>
+        <div class="music-status" id="musicStatus">
+            🎵 Music Ready - Click play to start
+        </div>
+    </section>
 
-        <!-- Audio Player -->
-        <section class="max-w-md mx-auto mb-12 glass-card parallax-layer">
-            <h2 class="text-center text-xl mb-4 text-purple-300">♪ Your Birthday Melody ♪</h2>
-            <div class="audio-viz" id="audioViz">
-                <div class="viz-bar"></div>
-                <div class="viz-bar"></div>
-                <div class="viz-bar"></div>
-                <div class="viz-bar"></div>
-                <div class="viz-bar"></div>
-                <div class="viz-bar"></div>
-                <div class="viz-bar"></div>
-                <div class="viz-bar"></div>
-                <div class="viz-bar"></div>
-                <div class="viz-bar"></div>
+    <!-- Birthday Countdown -->
+    <section class="max-w-lg mx-auto mb-12 glass-card">
+        <h2 class="text-2xl mb-6 text-center text-purple-300">Time Until Next Year's Magic</h2>
+        <div class="grid grid-cols-4 gap-4" id="countdown">
+            <div class="countdown-item">
+                <div class="countdown-number" id="days">365</div>
+                <div class="countdown-label">Days</div>
             </div>
-            <audio id="bgMusic" loop preload="auto">
-                <source src="Pisces - Tony Ann (Piano Cover).mp3" type="audio/mpeg">
-                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-            </audio>
-            <div class="text-center mt-4">
-                <button id="playPauseBtn" class="px-6 py-2 bg-purple-600/30 rounded-lg hover:bg-purple-600/50 transition-colors">
-                    Play / Pause
+            <div class="countdown-item">
+                <div class="countdown-number" id="hours">00</div>
+                <div class="countdown-label">Hours</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="minutes">00</div>
+                <div class="countdown-label">Minutes</div>
+            </div>
+            <div class="countdown-item">
+                <div class="countdown-number" id="seconds">00</div>
+                <div class="countdown-label">Seconds</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Interactive Birthday Card -->
+    <section class="max-w-2xl mx-auto mb-12 glass-card">
+        <h2 class="text-2xl mb-6 text-center text-purple-300">Your Personalized Birthday Card</h2>
+        <div class="birthday-card">
+            <h3 class="text-3xl cosmic-shimmer mb-4">Happy Birthday, Ela!</h3>
+            <p id="cardMessage" class="text-lg opacity-80 mb-6">Click to generate a magical message</p>
+            <div class="flex justify-center gap-4 flex-wrap">
+                <button id="generateBtn" class="magic-button">
+                    ✨ Generate New Wish
+                </button>
+                <button id="shareBtn" class="magic-button">
+                    💝 Share the Love
                 </button>
             </div>
-            <div class="music-status" id="musicStatus">
-                🎵 Music Ready - Click play to start
-            </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Birthday Countdown -->
-        <section class="max-w-lg mx-auto mb-12 glass-card parallax-layer">
-            <h2 class="text-2xl mb-6 text-center text-purple-300">Time Until Next Year's Magic</h2>
-            <div class="grid grid-cols-4 gap-4" id="countdown">
-                <div class="countdown-item">
-                    <div class="countdown-number" id="days">365</div>
-                    <div class="countdown-label">Days</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="countdown-number" id="hours">00</div>
-                    <div class="countdown-label">Hours</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="countdown-number" id="minutes">00</div>
-                    <div class="countdown-label">Minutes</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="countdown-number" id="seconds">00</div>
-                    <div class="countdown-label">Seconds</div>
-                </div>
-            </div>
-        </section>
+    <!-- Birthday Letter -->
+    <article class="max-w-4xl mx-auto mb-12 glass-card">
+        <h2 class="text-3xl mb-8 text-center cosmic-shimmer">To Ela, On Your Birthday</h2>
+        <div class="letter-content" id="letterContent">
+              <p>
+                <em>Ela</em>, today the cosmos pauses in its eternal dance to celebrate the moment you arrived in this universe. Not with fanfare or cosmic explosions, but with the quiet recognition that something essential had just been added to existence.
+            </p>
+            <p>
+                You are the kind of rare that astronomers spend lifetimes searching for — a phenomenon that defies easy explanation. Your beauty isn't just in the constellation of your features, though they could inspire poets to abandon metaphor for simple truth. It lives in the gravity of your presence, the way you bend the light around you into something warmer, softer, more hopeful.
+            </p>
+            <p>
+                Like distant stars whose light takes years to reach us, the full magnitude of who you are reveals itself slowly, in moments that catch us by surprise. In the way kindness flows from you as naturally as light from the sun. In your strength that doesn't announce itself but simply exists, constant as the northern star.
+            </p>
+            <p>
+                You transform the ordinary into the extraordinary simply by experiencing it. A Tuesday becomes a celebration. A simple song becomes a symphony. A moment becomes a memory worth keeping forever. This is your gift — not just living in the world, but elevating it, one breath at a time.
+            </p>
+            <p>
+                On this birthday, as you stand at the threshold of another year, know that you are not just loved but <em>essential</em>. The universe is more beautiful because you're in it. Every person you've touched carries a piece of your light with them, making the darkness a little less dark.
+            </p>
+            <p>
+                May this new year bring you joy that matches your capacity to give it. May you find wonder in unexpected places. May you always remember that in the grand equation of existence, you are the variable that makes everything else make sense.
+            </p>
+            <p>
+                Happy Birthday, beautiful soul. The stars themselves are jealous of your shine.
+            </p>
+        </div>
+    </article>
 
-        <!-- Interactive Birthday Card -->
-        <section class="max-w-2xl mx-auto mb-12 glass-card parallax-layer">
-            <h2 class="text-2xl mb-6 text-center text-purple-300">Your Personalized Birthday Card</h2>
-            <div class="birthday-card">
-                <h3 class="text-3xl cosmic-shimmer mb-4">Happy Birthday, Ela!</h3>
-                <p id="cardMessage" class="text-lg opacity-80 mb-6">Click to generate a magical message</p>
-                <div class="flex justify-center gap-4 flex-wrap">
-                    <button id="generateBtn" class="magic-button">
-                        ✨ Generate New Wish
-                    </button>
-                    <button id="shareBtn" class="magic-button">
-                        💝 Share the Love
-                    </button>
-                </div>
-            </div>
-        </section>
+    <!-- Dynamic Wishes -->
+    <section class="max-w-lg mx-auto mb-12 text-center">
+        <p class="text-2xl cosmic-shimmer" id="dynamicWish">With all my love, today and always 💫</p>
+    </section>
 
-        <!-- Birthday Letter -->
-        <article class="max-w-4xl mx-auto mb-12 glass-card parallax-layer">
-            <h2 class="text-3xl mb-8 text-center cosmic-shimmer">To Ela, On Your Birthday</h2>
-            <div class="letter-content" id="letterContent">
-                <p>
-                    <em>Ela</em>, today the cosmos pauses in its eternal dance to celebrate the moment you arrived in this universe. Not with fanfare or cosmic explosions, but with the quiet recognition that something essential had just been added to existence.
-                </p>
-                <p>
-                    You are the kind of rare that astronomers spend lifetimes searching for — a phenomenon that defies easy explanation. Your beauty isn't just in the constellation of your features, though they could inspire poets to abandon metaphor for simple truth. It lives in the gravity of your presence, the way you bend the light around you into something warmer, softer, more hopeful.
-                </p>
-                <p>
-                    Like distant stars whose light takes years to reach us, the full magnitude of who you are reveals itself slowly, in moments that catch us by surprise. In the way kindness flows from you as naturally as light from the sun. In your strength that doesn't announce itself but simply exists, constant as the northern star.
-                </p>
-                <p>
-                    You transform the ordinary into the extraordinary simply by experiencing it. A Tuesday becomes a celebration. A simple song becomes a symphony. A moment becomes a memory worth keeping forever. This is your gift — not just living in the world, but elevating it, one breath at a time.
-                </p>
-                <p>
-                    On this birthday, as you stand at the threshold of another year, know that you are not just loved but <em>essential</em>. The universe is more beautiful because you're in it. Every person you've touched carries a piece of your light with them, making the darkness a little less dark.
-                </p>
-                <p>
-                    May this new year bring you joy that matches your capacity to give it. May you find wonder in unexpected places. May you always remember that in the grand equation of existence, you are the variable that makes everything else make sense.
-                </p>
-                <p>
-                    Happy Birthday, beautiful soul. The stars themselves are jealous of your shine.
-                </p>
-            </div>
-        </article>
+    <!-- Call to Action -->
+    <section class="max-w-2xl mx-auto mb-12 text-center glass-card">
+        <h2 class="text-2xl mb-4 cosmic-shimmer">Ready for Something Special?</h2>
+        <p class="mb-6 opacity-80">I've created an interactive birthday experience just for you</p>
+        <a href="index2.html" class="magic-button inline-block">
+            🌟 Enter the Birthday Universe 🌟
+        </a>
+    </section>
+</main>
 
-        <!-- Dynamic Wishes -->
-        <section class="max-w-lg mx-auto mb-12 text-center parallax-layer">
-            <p class="text-2xl cosmic-shimmer" id="dynamicWish" style="transition: opacity 0.5s ease;">With all my love, today and always 💫</p>
-        </section>
+<script>
+    'use strict';
 
-        <!-- Call to Action -->
-        <section class="max-w-2xl mx-auto mb-12 text-center glass-card parallax-layer">
-            <h2 class="text-2xl mb-4 cosmic-shimmer">Ready for Something Special?</h2>
-            <p class="mb-6 opacity-80">I've created an interactive birthday experience just for you</p>
-            <a href="index2.html" class="magic-button inline-block">
-                🌟 Enter the Birthday Universe 🌟
-            </a>
-        </section>
-    </main>
-
-    <script>
-        'use strict';
-
-        /**
-         * @typedef {Object} Star
-         * @property {number} x - X coordinate
-         * @property {number} y - Y coordinate
-         * @property {number} size - Star size
-         * @property {number} speed - Movement speed
-         * @property {number} brightness - Brightness level (0-1)
-         */
-
-        /**
-         * @typedef {Object} Result
-         * @property {boolean} ok - Success flag
-         * @property {*} value - Result value
-         * @property {Error|null} error - Error if failed
-         */
-
-        /**
-         * Functional Result type for safe operations (Rust-like)
-         * @template T
-         * @param {T} value
-         * @returns {Result}
-         */
-        const Ok = (value) => ({ ok: true, value, error: null });
-
-        /**
-         * @template T
-         * @param {Error|string} error
-         * @returns {Result}
-         */
-        const Err = (error) => ({ 
-            ok: false, 
-            value: null, 
-            error: error instanceof Error ? error : new Error(String(error))
-        });
-
-        /**
-         * Safe DOM query with Result type
-         * @param {string} selector
-         * @returns {Result}
-         */
-        const safeQuery = (selector) => {
-            try {
-                const element = document.querySelector(selector);
-                return element ? Ok(element) : Err(`Element not found: ${selector}`);
-            } catch (error) {
-                return Err(error);
-            }
-        };
-
-        /**
-         * Safe DOM query all
-         * @param {string} selector
-         * @returns {Result}
-         */
-        const safeQueryAll = (selector) => {
-            try {
-                const elements = Array.from(document.querySelectorAll(selector));
-                return Ok(elements);
-            } catch (error) {
-                return Err(error);
-            }
-        };
-
-        /**
-         * Debounce function for performance
-         * @param {Function} fn
-         * @param {number} delay
-         * @returns {Function}
-         */
-        const debounce = (fn, delay) => {
-            let timeoutId = null;
-            return (...args) => {
-                if (timeoutId !== null) {
-                    clearTimeout(timeoutId);
-                }
-                timeoutId = setTimeout(() => fn(...args), delay);
-            };
-        };
-
-        /**
-         * Throttle function for performance
-         * @param {Function} fn
-         * @param {number} delay
-         * @returns {Function}
-         */
-        const throttle = (fn, delay) => {
-            let lastCall = 0;
-            return (...args) => {
-                const now = Date.now();
-                if (now - lastCall >= delay) {
-                    lastCall = now;
-                    fn(...args);
-                }
-            };
-        };
-
-        /**
-         * Request Animation Frame with performance optimization
-         */
-        const RAF = (() => {
-            const callbacks = new Set();
-            let rafId = null;
-
-            const tick = () => {
-                callbacks.forEach(cb => {
-                    try {
-                        cb();
-                    } catch (error) {
-                        console.error('RAF callback error:', error);
-                    }
-                });
-                rafId = requestAnimationFrame(tick);
-            };
-
-            return {
-                add: (callback) => {
-                    callbacks.add(callback);
-                    if (!rafId) tick();
-                },
-                remove: (callback) => {
-                    callbacks.delete(callback);
-                    if (callbacks.size === 0 && rafId) {
-                        cancelAnimationFrame(rafId);
-                        rafId = null;
-                    }
-                }
-            };
-        })();
-
-        /**
-         * Main Birthday Application
-         * Functional, immutable, and performance-optimized
-         */
-        const BirthdayApp = (() => {
-            // Immutable State
-            let state = {
-                isPlaying: false,
-                stars: [],
-                mouseX: 0,
-                mouseY: 0,
-                audioContext: null,
-                analyser: null,
-                dataArray: null,
-                isInitialized: false
-            };
-
-            // Pure state update function
-            const updateState = (updates) => {
-                state = Object.freeze({ ...state, ...updates });
-                return state;
-            };
-
-            // Cache DOM elements for performance
-            const DOM = (() => {
-                const cache = new Map();
-                
-                const get = (selector) => {
-                    if (cache.has(selector)) {
-                        return cache.get(selector);
-                    }
-                    const result = safeQuery(selector);
-                    if (result.ok) {
-                        cache.set(selector, result.value);
-                        return result.value;
-                    }
-                    console.warn(`Element not found: ${selector}`);
-                    return null;
-                };
-
-                const getAll = (selector) => {
-                    if (cache.has(selector)) {
-                        return cache.get(selector);
-                    }
-                    const result = safeQueryAll(selector);
-                    if (result.ok) {
-                        cache.set(selector, result.value);
-                        return result.value;
-                    }
-                    return [];
-                };
-
-                return { get, getAll };
-            })();
-
-            /**
-             * Canvas Management Module
-             */
-            const CanvasManager = (() => {
-                let canvas = null;
-                let ctx = null;
-                let interactiveCanvas = null;
-                let interactiveCtx = null;
-
-                /**
-                 * Initialize canvas
-                 * @returns {Result}
-                 */
-                const init = () => {
-                    try {
-                        canvas = DOM.get('#starCanvas');
-                        interactiveCanvas = DOM.get('#interactiveCanvas');
-                        
-                        if (!canvas || !interactiveCanvas) {
-                            return Err('Canvas elements not found');
-                        }
-
-                        ctx = canvas.getContext('2d', { alpha: true });
-                        interactiveCtx = interactiveCanvas.getContext('2d', { alpha: true });
-
-                        if (!ctx || !interactiveCtx) {
-                            return Err('Could not get canvas context');
-                        }
-
-                        resize();
-                        window.addEventListener('resize', debounce(resize, 250));
-
-                        return Ok({ canvas, ctx, interactiveCanvas, interactiveCtx });
-                    } catch (error) {
-                        return Err(error);
-                    }
-                };
-
-                /**
-                 * Resize canvas
-                 */
-                const resize = () => {
-                    if (!canvas || !interactiveCanvas) return;
+    // Simplified, reliable birthday experience
+    const BirthdayApp = {
+        // State
+        isPlaying: false,
+        stars: [],
+        audioContext: null,
+        analyser: null,
+        dataArray: null,
+        
+        // Initialize
+        init() {
+            this.setupCanvas();
+            this.setupAudio();
+            this.bindEvents();
+            this.startCountdown();
+            this.generateWishes();
+        },
+        
+        // Audio setup for real visualizer
+        setupAudio() {
+            const audio = document.getElementById('bgMusic');
+            
+            // Create audio context on user interaction
+            const initAudioContext = () => {
+                if (!this.audioContext) {
+                    this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const source = this.audioContext.createMediaElementSource(audio);
+                    this.analyser = this.audioContext.createAnalyser();
+                    this.analyser.fftSize = 64;
                     
-                    const dpr = window.devicePixelRatio || 1;
-                    const width = window.innerWidth;
-                    const height = window.innerHeight;
-
-                    // Main canvas
-                    canvas.width = width * dpr;
-                    canvas.height = height * dpr;
-                    canvas.style.width = `${width}px`;
-                    canvas.style.height = `${height}px`;
+                    source.connect(this.analyser);
+                    this.analyser.connect(this.audioContext.destination);
                     
-                    // Interactive canvas
-                    interactiveCanvas.width = width * dpr;
-                    interactiveCanvas.height = height * dpr;
-                    interactiveCanvas.style.width = `${width}px`;
-                    interactiveCanvas.style.height = `${height}px`;
-
-                    if (ctx) ctx.scale(dpr, dpr);
-                    if (interactiveCtx) interactiveCtx.scale(dpr, dpr);
-                };
-
-                /**
-                 * Clear canvas
-                 */
-                const clear = () => {
-                    if (!ctx || !canvas) return;
-                    ctx.clearRect(0, 0, canvas.width, canvas.height);
-                };
-
-                /**
-                 * Clear interactive canvas
-                 */
-                const clearInteractive = () => {
-                    if (!interactiveCtx || !interactiveCanvas) return;
-                    interactiveCtx.clearRect(0, 0, interactiveCanvas.width, interactiveCanvas.height);
-                };
-
-                const getContext = () => ctx;
-                const getInteractiveContext = () => interactiveCtx;
-                const getDimensions = () => ({
-                    width: canvas ? canvas.width : 0,
-                    height: canvas ? canvas.height : 0
-                });
-
-                return {
-                    init,
-                    resize,
-                    clear,
-                    clearInteractive,
-                    getContext,
-                    getInteractiveContext,
-                    getDimensions
-                };
-            })();
-
-            /**
-             * Star System Module
-             */
-            const StarSystem = (() => {
-                const MAX_STARS = 150;
+                    this.dataArray = new Uint8Array(this.analyser.frequencyBinCount);
+                }
+            };
+            
+            // Store for later use
+            this.initAudioContext = initAudioContext;
+        },
+        
+        // Visualizer animation
+        animateVisualizer() {
+            if (!this.isPlaying) return;
+            
+            const bars = document.querySelectorAll('.viz-bar');
+            
+            if (this.analyser && this.dataArray) {
+                this.analyser.getByteFrequencyData(this.dataArray);
                 
-                /**
-                 * Create a star
-                 * @returns {Star}
-                 */
-                const createStar = () => ({
-                    x: Math.random() * window.innerWidth,
-                    y: Math.random() * window.innerHeight,
+                // Map frequency data to bars
+                bars.forEach((bar, i) => {
+                    const value = this.dataArray[i * 2] || 0;
+                    const height = Math.max(10, (value / 255) * 100);
+                    bar.style.height = `${height}%`;
+                });
+            } else {
+                // Fallback animation if audio context fails
+                const time = Date.now() * 0.001;
+                bars.forEach((bar, i) => {
+                    const height = 30 + Math.sin(time * 2 + i * 0.5) * 20;
+                    bar.style.height = `${height}%`;
+                });
+            }
+            
+            requestAnimationFrame(() => this.animateVisualizer());
+        },
+        
+        // Canvas setup - simplified for reliability
+        setupCanvas() {
+            const canvas = document.getElementById('starCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            const resize = () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            };
+            resize();
+            window.addEventListener('resize', resize);
+            
+            // Create stars
+            for (let i = 0; i < 100; i++) {
+                this.stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
                     size: Math.random() * 2 + 0.5,
                     speed: Math.random() * 0.5 + 0.1,
                     brightness: Math.random()
                 });
-
-                /**
-                 * Initialize stars
-                 * @returns {Star[]}
-                 */
-                const initStars = () => {
-                    return Array.from({ length: MAX_STARS }, createStar);
-                };
-
-                /**
-                 * Update star position
-                 * @param {Star} star
-                 * @returns {Star}
-                 */
-                const updateStar = (star) => {
+            }
+            
+            // Animation loop
+            const animate = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                // Draw stars
+                ctx.fillStyle = 'white';
+                this.stars.forEach(star => {
                     // Twinkling effect
-                    const newBrightness = star.brightness + (Math.random() - 0.5) * 0.1;
-                    const brightness = Math.max(0.3, Math.min(1, newBrightness));
-
-                    // Move star
-                    let y = star.y + star.speed;
-                    let x = star.x;
-
-                    // Reset if out of bounds
-                    if (y > window.innerHeight) {
-                        y = 0;
-                        x = Math.random() * window.innerWidth;
-                    }
-
-                    return { ...star, brightness, y, x };
-                };
-
-                /**
-                 * Draw star
-                 * @param {CanvasRenderingContext2D} ctx
-                 * @param {Star} star
-                 */
-                const drawStar = (ctx, star) => {
-                    if (!ctx) return;
-
-                    ctx.save();
+                    star.brightness += (Math.random() - 0.5) * 0.1;
+                    star.brightness = Math.max(0.3, Math.min(1, star.brightness));
+                    
                     ctx.globalAlpha = star.brightness;
-                    ctx.fillStyle = '#ffffff';
                     ctx.beginPath();
                     ctx.arc(star.x, star.y, star.size, 0, Math.PI * 2);
                     ctx.fill();
-                    ctx.restore();
-                };
-
-                /**
-                 * Render all stars
-                 * @param {CanvasRenderingContext2D} ctx
-                 * @param {Star[]} stars
-                 */
-                const render = (ctx, stars) => {
-                    if (!ctx || !stars) return;
-                    stars.forEach(star => drawStar(ctx, star));
-                };
-
-                return {
-                    initStars,
-                    updateStar,
-                    render
-                };
-            })();
-
-            /**
-             * Audio Module
-             */
-            const AudioModule = (() => {
-                let audioElement = null;
-                let audioContext = null;
-                let analyser = null;
-                let dataArray = null;
-                let source = null;
-
-                /**
-                 * Initialize audio
-                 * @returns {Result}
-                 */
-                const init = () => {
-                    try {
-                        audioElement = DOM.get('#bgMusic');
-                        if (!audioElement) {
-                            return Err('Audio element not found');
-                        }
-
-                        audioElement.volume = 0.5;
-                        audioElement.preload = 'auto';
-
-                        return Ok(audioElement);
-                    } catch (error) {
-                        return Err(error);
-                    }
-                };
-
-                /**
-                 * Initialize audio context (requires user interaction)
-                 * @returns {Result}
-                 */
-                const initContext = () => {
-                    try {
-                        if (audioContext) return Ok(audioContext);
-
-                        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        source = audioContext.createMediaElementSource(audioElement);
-                        analyser = audioContext.createAnalyser();
-                        analyser.fftSize = 64;
-                        analyser.smoothingTimeConstant = 0.8;
-
-                        source.connect(analyser);
-                        analyser.connect(audioContext.destination);
-
-                        dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-                        updateState({ audioContext, analyser, dataArray });
-
-                        return Ok(audioContext);
-                    } catch (error) {
-                        return Err(error);
-                    }
-                };
-
-                /**
-                 * Play audio
-                 * @returns {Promise<Result>}
-                 */
-                const play = async () => {
-                    try {
-                        if (!audioElement) return Err('Audio not initialized');
-                        
-                        // Initialize context if not done
-                        if (!audioContext) {
-                            const result = initContext();
-                            if (!result.ok) return result;
-                        }
-
-                        await audioElement.play();
-                        updateState({ isPlaying: true });
-                        return Ok(true);
-                    } catch (error) {
-                        return Err(error);
-                    }
-                };
-
-                /**
-                 * Pause audio
-                 * @returns {Result}
-                 */
-                const pause = () => {
-                    try {
-                        if (!audioElement) return Err('Audio not initialized');
-                        audioElement.pause();
-                        updateState({ isPlaying: false });
-                        return Ok(true);
-                    } catch (error) {
-                        return Err(error);
-                    }
-                };
-
-                /**
-                 * Toggle play/pause
-                 * @returns {Promise<Result>}
-                 */
-                const toggle = async () => {
-                    return state.isPlaying ? pause() : await play();
-                };
-
-                /**
-                 * Get frequency data
-                 * @returns {Uint8Array|null}
-                 */
-                const getFrequencyData = () => {
-                    if (!analyser || !dataArray) return null;
-                    analyser.getByteFrequencyData(dataArray);
-                    return dataArray;
-                };
-
-                return {
-                    init,
-                    initContext,
-                    play,
-                    pause,
-                    toggle,
-                    getFrequencyData
-                };
-            })();
-
-            /**
-             * Visualizer Module
-             */
-            const Visualizer = (() => {
-                let bars = [];
-                let vizElement = null;
-
-                /**
-                 * Initialize visualizer
-                 * @returns {Result}
-                 */
-                const init = () => {
-                    try {
-                        vizElement = DOM.get('#audioViz');
-                        bars = DOM.getAll('.viz-bar');
-                        
-                        if (!vizElement || bars.length === 0) {
-                            return Err('Visualizer elements not found');
-                        }
-
-                        return Ok({ vizElement, bars });
-                    } catch (error) {
-                        return Err(error);
-                    }
-                };
-
-                /**
-                 * Update visualizer with frequency data
-                 */
-                const update = () => {
-                    if (!state.isPlaying || bars.length === 0) return;
-
-                    const frequencyData = AudioModule.getFrequencyData();
                     
-                    if (frequencyData) {
-                        // Real audio data
-                        bars.forEach((bar, i) => {
-                            const value = frequencyData[i * 2] || 0;
-                            const height = Math.max(10, (value / 255) * 100);
-                            bar.style.height = `${height}%`;
-                        });
-                    } else {
-                        // Fallback animation
-                        const time = Date.now() * 0.001;
-                        bars.forEach((bar, i) => {
-                            const height = 30 + Math.sin(time * 3 + i * 0.5) * 20;
-                            bar.style.height = `${height}%`;
-                        });
+                    // Move star
+                    star.y += star.speed;
+                    if (star.y > canvas.height) {
+                        star.y = 0;
+                        star.x = Math.random() * canvas.width;
                     }
-                };
-
-                /**
-                 * Set playing state
-                 * @param {boolean} isPlaying
-                 */
-                const setPlaying = (isPlaying) => {
-                    if (!vizElement) return;
-                    
-                    if (isPlaying) {
-                        vizElement.classList.add('playing');
-                    } else {
-                        vizElement.classList.remove('playing');
-                    }
-                };
-
-                return {
-                    init,
-                    update,
-                    setPlaying
-                };
-            })();
-
-            /**
-             * Countdown Module
-             */
-            const CountdownModule = (() => {
-                const BIRTHDAY = { month: 8, day: 15 }; // September 15 (0-indexed)
-                let elements = {};
-
-                /**
-                 * Initialize countdown
-                 * @returns {Result}
-                 */
-                const init = () => {
+                });
+                ctx.globalAlpha = 1;
+                
+                requestAnimationFrame(animate);
+            };
+            animate();
+        },
+        
+        // Event binding
+        bindEvents() {
+            const portal = document.getElementById('portal');
+            const mainContent = document.getElementById('mainContent');
+            const enterBtn = document.getElementById('enterBtn');
+            const musicBtn = document.getElementById('musicBtn');
+            const playPauseBtn = document.getElementById('playPauseBtn');
+            const bgMusic = document.getElementById('bgMusic');
+            const generateBtn = document.getElementById('generateBtn');
+            const shareBtn = document.getElementById('shareBtn');
+            const audioViz = document.getElementById('audioViz');
+            const musicStatus = document.getElementById('musicStatus');
+            
+            // Enter button - AUTOMATICALLY PLAY MUSIC
+            enterBtn.addEventListener('click', async () => {
+                portal.classList.add('hidden');
+                mainContent.style.opacity = '1';
+                
+                // Initialize audio context on user gesture
+                this.initAudioContext();
+                
+                // Try to play music automatically
+                try {
+                    bgMusic.volume = 0.5;
+                    await bgMusic.play();
+                    this.isPlaying = true;
+                    audioViz.classList.add('playing');
+                    musicStatus.textContent = '🎵 Music playing - Happy Birthday!';
+                    musicStatus.classList.add('playing');
+                    this.animateVisualizer();
+                    this.showSuccess('Welcome! Music is playing 🎵');
+                } catch (error) {
+                    console.log('Autoplay prevented:', error);
+                    this.showSuccess('Welcome! Click the music button to start the birthday song 🎵');
+                    musicStatus.textContent = '⏸️ Music paused - Click play to start';
+                }
+                
+                // Show letter with delay
+                setTimeout(() => {
+                    document.getElementById('letterContent').classList.add('visible');
+                }, 500);
+            });
+            
+            // Music controls
+            const toggleMusic = async () => {
+                if (this.isPlaying) {
+                    bgMusic.pause();
+                    this.isPlaying = false;
+                    audioViz.classList.remove('playing');
+                    musicStatus.textContent = '⏸️ Music paused';
+                    musicStatus.classList.remove('playing');
+                } else {
                     try {
-                        elements = {
-                            days: DOM.get('#days'),
-                            hours: DOM.get('#hours'),
-                            minutes: DOM.get('#minutes'),
-                            seconds: DOM.get('#seconds')
-                        };
-
-                        if (Object.values(elements).some(el => !el)) {
-                            return Err('Countdown elements not found');
-                        }
-
-                        return Ok(elements);
+                        // Initialize audio context if not done
+                        this.initAudioContext();
+                        
+                        bgMusic.volume = 0.5;
+                        await bgMusic.play();
+                        this.isPlaying = true;
+                        audioViz.classList.add('playing');
+                        musicStatus.textContent = '🎵 Music playing - Happy Birthday!';
+                        musicStatus.classList.add('playing');
+                        this.animateVisualizer();
+                        this.showSuccess('Music playing! 🎵');
                     } catch (error) {
-                        return Err(error);
+                        console.error('Play failed:', error);
+                        this.showSuccess('Unable to play music. Please check your browser settings.');
                     }
-                };
-
-                /**
-                 * Calculate time until next birthday
-                 * @returns {Object}
-                 */
-                const calculate = () => {
-                    const now = new Date();
-                    const currentYear = now.getFullYear();
-                    let birthday = new Date(currentYear, BIRTHDAY.month, BIRTHDAY.day);
-
-                    if (now > birthday) {
-                        birthday.setFullYear(currentYear + 1);
-                    }
-
-                    const diff = birthday - now;
-
-                    return {
-                        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
-                        hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-                        minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
-                        seconds: Math.floor((diff % (1000 * 60)) / 1000)
-                    };
-                };
-
-                /**
-                 * Update countdown display
-                 */
-                const update = () => {
-                    const time = calculate();
-
-                    if (elements.days) elements.days.textContent = time.days;
-                    if (elements.hours) elements.hours.textContent = String(time.hours).padStart(2, '0');
-                    if (elements.minutes) elements.minutes.textContent = String(time.minutes).padStart(2, '0');
-                    if (elements.seconds) elements.seconds.textContent = String(time.seconds).padStart(2, '0');
-                };
-
-                /**
-                 * Start countdown timer
-                 */
-                const start = () => {
-                    update();
-                    setInterval(update, 1000);
-                };
-
-                return {
-                    init,
-                    start
-                };
-            })();
-
-            /**
-             * Wishes Module
-             */
-            const WishesModule = (() => {
-                const wishes = [
-                    "Every star tonight shines for you, Ela 🌟",
-                    "Your smile lights up the entire universe 💫",
-                    "Another year of pure magic and wonder ✨",
-                    "You make the world better just by being you 💝",
-                    "Celebrating the miracle that is you today 🎉",
-                    "Your kindness ripples through the cosmos 🌌",
-                    "Today we celebrate your beautiful light 🌠",
-                    "The universe is brighter with you in it 🌈",
+                }
+            };
+            
+            // Music button handlers
+            musicBtn.addEventListener('click', toggleMusic);
+            playPauseBtn.addEventListener('click', toggleMusic);
+            
+            // Handle music ended
+            bgMusic.addEventListener('ended', () => {
+                // Loop should handle this, but just in case
+                bgMusic.play();
+            });
+            
+            // Generate wish
+            generateBtn.addEventListener('click', () => {
+                const messages = [
                     "May your dreams be as limitless as the stars ✨",
                     "Another year of making the world brighter 🌟",
                     "You're proof that magic exists in this universe 💫",
@@ -1294,473 +702,113 @@
                     "The universe smiled the day you were born 🌈",
                     "Your kindness creates ripples across galaxies 💝"
                 ];
-
-                let currentIndex = 0;
-                let wishElement = null;
-
-                /**
-                 * Initialize wishes
-                 * @returns {Result}
-                 */
-                const init = () => {
-                    try {
-                        wishElement = DOM.get('#dynamicWish');
-                        if (!wishElement) {
-                            return Err('Wish element not found');
-                        }
-                        return Ok(wishElement);
-                    } catch (error) {
-                        return Err(error);
-                    }
-                };
-
-                /**
-                 * Get random wish
-                 * @returns {string}
-                 */
-                const getRandom = () => {
-                    return wishes[Math.floor(Math.random() * wishes.length)];
-                };
-
-                /**
-                 * Update wish display
-                 */
-                const update = () => {
-                    if (!wishElement) return;
-
-                    wishElement.style.opacity = '0';
-
-                    setTimeout(() => {
-                        currentIndex = (currentIndex + 1) % wishes.length;
-                        wishElement.textContent = wishes[currentIndex];
-                        wishElement.style.opacity = '1';
-                    }, 500);
-                };
-
-                /**
-                 * Start auto-update
-                 */
-                const startAutoUpdate = () => {
-                    setInterval(update, 6000);
-                };
-
-                return {
-                    init,
-                    getRandom,
-                    update,
-                    startAutoUpdate
-                };
-            })();
-
-            /**
-             * UI Effects Module
-             */
-            const UIEffects = (() => {
-                /**
-                 * Show success message
-                 * @param {string} text
-                 */
-                const showSuccess = (text) => {
-                    const msg = DOM.get('#successMessage');
-                    const msgText = DOM.get('#successText');
-
-                    if (!msg || !msgText) return;
-
-                    msgText.textContent = text;
-                    msg.classList.add('show');
-
-                    setTimeout(() => {
-                        msg.classList.remove('show');
-                    }, 3000);
-                };
-
-                /**
-                 * Update music status
-                 * @param {boolean} isPlaying
-                 */
-                const updateMusicStatus = (isPlaying) => {
-                    const status = DOM.get('#musicStatus');
-                    if (!status) return;
-
-                    if (isPlaying) {
-                        status.textContent = '🎵 Music playing - Happy Birthday!';
-                        status.classList.add('playing');
-                    } else {
-                        status.textContent = '⏸️ Music paused - Click play to start';
-                        status.classList.remove('playing');
-                    }
-                };
-
-                /**
-                 * Create click ripple effect
-                 * @param {number} x
-                 * @param {number} y
-                 */
-                const createRipple = (x, y) => {
-                    const ripple = document.createElement('div');
-                    ripple.className = 'click-ripple';
-                    ripple.style.left = `${x - 50}px`;
-                    ripple.style.top = `${y - 50}px`;
-                    document.body.appendChild(ripple);
-
-                    setTimeout(() => ripple.remove(), 600);
-                };
-
-                /**
-                 * Create particle effect
-                 * @param {number} x
-                 * @param {number} y
-                 */
-                const createParticle = (x, y) => {
-                    const particle = document.createElement('div');
-                    particle.className = 'particle';
-                    particle.textContent = ['✨', '⭐', '💫', '🌟'][Math.floor(Math.random() * 4)];
-                    particle.style.left = `${x}px`;
-                    particle.style.top = `${y}px`;
-                    particle.style.fontSize = `${Math.random() * 20 + 10}px`;
-                    document.body.appendChild(particle);
-
-                    setTimeout(() => particle.remove(), 3000);
-                };
-
-                /**
-                 * Parallax effect
-                 * @param {number} x
-                 * @param {number} y
-                 */
-                const updateParallax = throttle((x, y) => {
-                    const layers = DOM.getAll('.parallax-layer');
-                    const centerX = window.innerWidth / 2;
-                    const centerY = window.innerHeight / 2;
-                    const deltaX = (x - centerX) / centerX;
-                    const deltaY = (y - centerY) / centerY;
-
-                    layers.forEach((layer, index) => {
-                        const depth = (index + 1) * 5;
-                        const moveX = deltaX * depth;
-                        const moveY = deltaY * depth;
-                        layer.style.transform = `translate(${moveX}px, ${moveY}px)`;
-                    });
-                }, 16);
-
-                return {
-                    showSuccess,
-                    updateMusicStatus,
-                    createRipple,
-                    createParticle,
-                    updateParallax
-                };
-            })();
-
-            /**
-             * Interactive Module
-             */
-            const InteractiveModule = (() => {
-                /**
-                 * Handle canvas click
-                 * @param {MouseEvent} e
-                 */
-                const handleCanvasClick = (e) => {
-                    const x = e.clientX;
-                    const y = e.clientY;
-
-                    UIEffects.createRipple(x, y);
-                    UIEffects.createParticle(x, y);
-
-                    // Draw constellation line
-                    const ctx = CanvasManager.getInteractiveContext();
-                    if (!ctx) return;
-
-                    ctx.strokeStyle = 'rgba(183, 148, 246, 0.6)';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.moveTo(state.mouseX, state.mouseY);
-                    ctx.lineTo(x, y);
-                    ctx.stroke();
-
-                    // Fade out after delay
-                    setTimeout(() => {
-                        CanvasManager.clearInteractive();
-                    }, 2000);
-
-                    updateState({ mouseX: x, mouseY: y });
-                };
-
-                /**
-                 * Handle mouse move
-                 * @param {MouseEvent} e
-                 */
-                const handleMouseMove = (e) => {
-                    updateState({ mouseX: e.clientX, mouseY: e.clientY });
-                    UIEffects.updateParallax(e.clientX, e.clientY);
-                };
-
-                /**
-                 * Setup interactive events
-                 */
-                const init = () => {
-                    const interactiveCanvas = DOM.get('#interactiveCanvas');
-                    if (interactiveCanvas) {
-                        interactiveCanvas.addEventListener('click', handleCanvasClick);
-                        interactiveCanvas.addEventListener('mousemove', throttle(handleMouseMove, 16));
-                    }
-
-                    // Add hover effects to cards
-                    const cards = DOM.getAll('.glass-card');
-                    cards.forEach(card => {
-                        card.addEventListener('mouseenter', () => {
-                            card.style.transform = 'translateY(-5px) scale(1.02)';
-                        });
-                        card.addEventListener('mouseleave', () => {
-                            card.style.transform = '';
-                        });
-                    });
-                };
-
-                return { init };
-            })();
-
-            /**
-             * Event Handlers Module
-             */
-            const EventHandlers = (() => {
-                /**
-                 * Handle enter button click
-                 */
-                const handleEnter = async () => {
-                    const portal = DOM.get('#portal');
-                    const mainContent = DOM.get('#mainContent');
-                    const letterContent = DOM.get('#letterContent');
-
-                    if (portal) portal.classList.add('hidden');
-                    if (mainContent) mainContent.style.opacity = '1';
-
-                    // Initialize audio context
-                    AudioModule.initContext();
-
-                    // Try to autoplay
-                    const result = await AudioModule.play();
-                    
-                    if (result.ok) {
-                        Visualizer.setPlaying(true);
-                        UIEffects.updateMusicStatus(true);
-                        UIEffects.showSuccess('Welcome! Music is playing 🎵');
-                    } else {
-                        UIEffects.showSuccess('Welcome! Click the music button to start 🎵');
-                        UIEffects.updateMusicStatus(false);
-                    }
-
-                    // Show letter with delay
-                    setTimeout(() => {
-                        if (letterContent) letterContent.classList.add('visible');
-                    }, 500);
-                };
-
-                /**
-                 * Handle music toggle
-                 */
-                const handleMusicToggle = async () => {
-                    const result = await AudioModule.toggle();
-                    
-                    if (result.ok) {
-                        Visualizer.setPlaying(state.isPlaying);
-                        UIEffects.updateMusicStatus(state.isPlaying);
-                        
-                        if (state.isPlaying) {
-                            UIEffects.showSuccess('Music playing! 🎵');
-                        } else {
-                            UIEffects.showSuccess('Music paused ⏸️');
-                        }
-                    } else {
-                        UIEffects.showSuccess('Unable to control music. Please check your browser settings.');
-                    }
-                };
-
-                /**
-                 * Handle wish generation
-                 */
-                const handleGenerateWish = () => {
-                    const cardMessage = DOM.get('#cardMessage');
-                    if (!cardMessage) return;
-
-                    const wish = WishesModule.getRandom();
-                    cardMessage.style.opacity = '0';
-
-                    setTimeout(() => {
-                        cardMessage.textContent = wish;
-                        cardMessage.style.opacity = '1';
-                    }, 300);
-
-                    UIEffects.showSuccess('New wish generated! ✨');
-                };
-
-                /**
-                 * Handle share
-                 */
-                const handleShare = async () => {
-                    const shareData = {
+                
+                const message = messages[Math.floor(Math.random() * messages.length)];
+                document.getElementById('cardMessage').textContent = message;
+                this.showSuccess('New wish generated! ✨');
+            });
+            
+            // Share button
+            shareBtn.addEventListener('click', () => {
+                if (navigator.share) {
+                    navigator.share({
                         title: 'Birthday Wishes for Ela',
-                        text: 'Celebrating an amazing person today! 🎉',
+                        text: 'Celebrating an amazing person today!',
                         url: window.location.href
-                    };
-
-                    if (navigator.share) {
-                        try {
-                            await navigator.share(shareData);
-                            UIEffects.showSuccess('Shared successfully! 💝');
-                        } catch (error) {
-                            if (error.name !== 'AbortError') {
-                                console.error('Share failed:', error);
-                            }
-                        }
-                    } else {
-                        // Fallback - copy to clipboard
-                        try {
-                            const text = `${shareData.text} ${shareData.url}`;
-                            await navigator.clipboard.writeText(text);
-                            UIEffects.showSuccess('Link copied to clipboard! 📋');
-                        } catch (error) {
-                            UIEffects.showSuccess('Unable to copy link');
-                        }
-                    }
-                };
-
-                /**
-                 * Handle visibility change
-                 */
-                const handleVisibilityChange = () => {
-                    if (document.hidden && state.isPlaying) {
-                        AudioModule.pause();
-                    } else if (!document.hidden && state.isPlaying) {
-                        AudioModule.play();
-                    }
-                };
-
-                /**
-                 * Bind all events
-                 */
-                const bindAll = () => {
-                    const enterBtn = DOM.get('#enterBtn');
-                    const musicBtn = DOM.get('#musicBtn');
-                    const playPauseBtn = DOM.get('#playPauseBtn');
-                    const generateBtn = DOM.get('#generateBtn');
-                    const shareBtn = DOM.get('#shareBtn');
-
-                    if (enterBtn) enterBtn.addEventListener('click', handleEnter);
-                    if (musicBtn) musicBtn.addEventListener('click', handleMusicToggle);
-                    if (playPauseBtn) playPauseBtn.addEventListener('click', handleMusicToggle);
-                    if (generateBtn) generateBtn.addEventListener('click', handleGenerateWish);
-                    if (shareBtn) shareBtn.addEventListener('click', handleShare);
-
-                    document.addEventListener('visibilitychange', handleVisibilityChange);
-                };
-
-                return { bindAll };
-            })();
-
-            /**
-             * Animation Loop
-             */
-            const AnimationLoop = (() => {
-                /**
-                 * Main render loop
-                 */
-                const render = () => {
-                    // Update stars
-                    const newStars = state.stars.map(StarSystem.updateStar);
-                    updateState({ stars: newStars });
-
-                    // Clear and render
-                    CanvasManager.clear();
-                    StarSystem.render(CanvasManager.getContext(), state.stars);
-
-                    // Update visualizer
-                    Visualizer.update();
-                };
-
-                /**
-                 * Start animation loop
-                 */
-                const start = () => {
-                    RAF.add(render);
-                };
-
-                return { start };
-            })();
-
-            /**
-             * Initialize the application
-             */
-            const init = () => {
-                if (state.isInitialized) return;
-
-                console.log('🎂 Initializing Birthday Experience...');
-
-                // Initialize modules in order
-                const canvasResult = CanvasManager.init();
-                if (!canvasResult.ok) {
-                    console.error('Canvas initialization failed:', canvasResult.error);
-                    return;
-                }
-
-                const audioResult = AudioModule.init();
-                if (!audioResult.ok) {
-                    console.warn('Audio initialization failed:', audioResult.error);
-                }
-
-                const vizResult = Visualizer.init();
-                if (!vizResult.ok) {
-                    console.warn('Visualizer initialization failed:', vizResult.error);
-                }
-
-                const countdownResult = CountdownModule.init();
-                if (!countdownResult.ok) {
-                    console.warn('Countdown initialization failed:', countdownResult.error);
+                    }).catch(err => console.log('Share cancelled'));
                 } else {
-                    CountdownModule.start();
+                    // Fallback - copy to clipboard
+                    const text = `Check out this birthday celebration for Ela! ${window.location.href}`;
+                    navigator.clipboard.writeText(text).then(() => {
+                        this.showSuccess('Link copied to clipboard! 📋');
+                    });
                 }
-
-                const wishesResult = WishesModule.init();
-                if (!wishesResult.ok) {
-                    console.warn('Wishes initialization failed:', wishesResult.error);
-                } else {
-                    WishesModule.startAutoUpdate();
+            });
+            
+            // Handle page visibility change (pause music when tab is hidden)
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden && this.isPlaying) {
+                    bgMusic.pause();
+                } else if (!document.hidden && this.isPlaying) {
+                    bgMusic.play();
                 }
-
-                // Initialize stars
-                const stars = StarSystem.initStars();
-                updateState({ stars, isInitialized: true });
-
-                // Bind events
-                EventHandlers.bindAll();
-
-                // Setup interactive features
-                InteractiveModule.init();
-
-                // Start animation loop
-                AnimationLoop.start();
-
-                console.log('✨ Birthday Experience Ready!');
+            });
+        },
+        
+        // Countdown timer
+        startCountdown() {
+            const updateCountdown = () => {
+                const now = new Date();
+                const currentYear = now.getFullYear();
+                let birthday = new Date(currentYear, 8, 15); // September 15
+                
+                // If birthday passed this year, set to next year
+                if (now > birthday) {
+                    birthday.setFullYear(currentYear + 1);
+                }
+                
+                const diff = birthday - now;
+                
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('days').textContent = days;
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
             };
-
-            // Public API
-            return {
-                init,
-                getState: () => state
-            };
-        })();
-
-        // Initialize when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => BirthdayApp.init());
-        } else {
-            BirthdayApp.init();
+            
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        },
+        
+        // Dynamic wishes
+        generateWishes() {
+            const wishes = [
+                "Every star tonight shines for you, Ela 🌟",
+                "Your smile lights up the entire universe 💫",
+                "Another year of pure magic and wonder ✨",
+                "You make the world better just by being you 💝",
+                "Celebrating the miracle that is you today 🎉",
+                "Your kindness ripples through the cosmos 🌌",
+                "Today we celebrate your beautiful light 🌠",
+                "The universe is brighter with you in it 🌈"
+            ];
+            
+            let index = 0;
+            setInterval(() => {
+                const wishEl = document.getElementById('dynamicWish');
+                wishEl.style.opacity = '0';
+                
+                setTimeout(() => {
+                    index = (index + 1) % wishes.length;
+                    wishEl.textContent = wishes[index];
+                    wishEl.style.opacity = '1';
+                }, 500);
+            }, 5000);
+        },
+        
+        // Show success message
+        showSuccess(text) {
+            const msg = document.getElementById('successMessage');
+            const msgText = document.getElementById('successText');
+            
+            msgText.textContent = text;
+            msg.classList.add('show');
+            
+            setTimeout(() => {
+                msg.classList.remove('show');
+            }, 3000);
         }
-
-        // Expose to window for debugging
-        if (typeof window !== 'undefined') {
-            window.BirthdayApp = BirthdayApp;
-        }
-    </script>
-</body>
-</html>
+    };
+    
+    // Start when ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => BirthdayApp.init());
+    } else {
+        BirthdayApp.init();
+    }
+</script>
+</body> </html>
